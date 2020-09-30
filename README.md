@@ -1,2 +1,2 @@
-# blockchain-project
+# Blockchain
 Project from JetBrains Academy
