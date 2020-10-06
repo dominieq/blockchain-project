@@ -1,7 +1,8 @@
 package org.example.blockchain.logic.users;
 
 import org.example.blockchain.logic.BlockChain;
-import org.example.blockchain.logic.blocks.*;
+import org.example.blockchain.logic.block.*;
+import org.example.blockchain.logic.block.builder.BlockBuilder;
 import org.example.blockchain.logic.messages.Message;
 
 import java.security.KeyPair;
@@ -65,7 +66,7 @@ public class Miner extends User {
 
         String hash = Blocks.applySha256(id + timestamp + previousHash + createdBy + magicNumber);
 
-        Block block = new BlockBuilder()
+        Block block = BlockBuilder.builder()
                 .withId(id)
                 .withTimestamp(timestamp)
                 .withMagicNumber(magicNumber)
