@@ -3,7 +3,7 @@ package org.example.blockchain.logic.users;
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.block.*;
 import org.example.blockchain.logic.block.builder.BlockBuilder;
-import org.example.blockchain.logic.messages.Message;
+import org.example.blockchain.logic.message.Message;
 
 import java.security.KeyPair;
 import java.util.ArrayList;

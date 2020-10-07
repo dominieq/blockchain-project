@@ -1,7 +1,7 @@
 package org.example.blockchain.logic.block.builder;
 
 import org.example.blockchain.logic.block.Block;
-import org.example.blockchain.logic.messages.Message;
+import org.example.blockchain.logic.message.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

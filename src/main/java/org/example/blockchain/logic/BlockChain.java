@@ -2,7 +2,7 @@ package org.example.blockchain.logic;
 
 import org.example.blockchain.logic.block.Block;
 import org.example.blockchain.logic.block.Blocks;
-import org.example.blockchain.logic.messages.Message;
+import org.example.blockchain.logic.message.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;

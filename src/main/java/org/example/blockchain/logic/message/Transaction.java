@@ -1,4 +1,4 @@
-package org.example.blockchain.logic.messages;
+package org.example.blockchain.logic.message;
 
 import org.example.blockchain.logic.users.User;
 
@@ -8,7 +8,11 @@ public class Transaction extends MessageDecorator {
     private final User to;
     private final long amount;
 
-    public Transaction(Message message, User from, User to, long amount) {
+    public Transaction(final Message message,
+                       final User from,
+                       final User to,
+                       final long amount) {
+
         super(message);
 
         this.from = from;

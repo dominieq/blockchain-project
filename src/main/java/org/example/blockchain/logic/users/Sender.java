@@ -1,7 +1,7 @@
 package org.example.blockchain.logic.users;
 
 import org.example.blockchain.logic.BlockChain;
-import org.example.blockchain.logic.messages.*;
+import org.example.blockchain.logic.message.*;
 
 import java.security.KeyPair;
 
