@@ -5,8 +5,6 @@ import org.example.blockchain.logic.message.Message;
 
 import java.util.List;
 
-import static java.util.Objects.isNull;
-
 public final class BlockBuilder {
 
     private long id;
@@ -23,23 +21,6 @@ public final class BlockBuilder {
 
     public static BlockBuilder builder() {
         return new BlockBuilder();
-    }
-
-    public BlockBuilder from(Block block) {
-        if (isNull(block)) {
-            return this;
-        }
-
-        this.id = block.getId();
-        this.timestamp = block.getTimestamp();
-        this.magicNumber = block.getMagicNumber();
-        this.hash = block.getHash();
-        this.previousHash = block.getPreviousHash();
-        this.createdBy = block.getCreatedBy();
-        this.generationTime = block.getGenerationTime();
-        this.nProgress = block.getNProgress();
-        this.messages = block.getMessages();
-        return this;
     }
 
     public BlockBuilder withId(final long id) {
