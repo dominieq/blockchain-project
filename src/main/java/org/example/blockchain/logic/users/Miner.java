@@ -11,7 +11,10 @@ import java.util.Date;
 
 public class Miner extends User {
 
-    public Miner(String name, KeyPair keyPair, BlockChain blockChain) {
+    public Miner(final String name,
+                 final KeyPair keyPair,
+                 final BlockChain blockChain) {
+
         super(name, keyPair, blockChain);
     }
 

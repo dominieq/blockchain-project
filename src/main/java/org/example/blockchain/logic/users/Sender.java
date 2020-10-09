@@ -7,7 +7,10 @@ import java.security.KeyPair;
 
 public class Sender extends User {
 
-    public Sender(String name, KeyPair keyPair, BlockChain blockChain) {
+    public Sender(final String name,
+                  final KeyPair keyPair,
+                  final BlockChain blockChain) {
+
         super(name, keyPair, blockChain);
     }
 
