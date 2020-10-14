@@ -10,7 +10,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 public class SecureMessageTest {
 
@@ -52,5 +52,25 @@ public class SecureMessageTest {
                 .hasFieldOrPropertyWithValue("text", text)
                 .hasFieldOrPropertyWithValue("signature", sign)
                 .hasFieldOrPropertyWithValue("publicKey", keyPair.getPublic());
+    }
+
+    @Test
+    public void should_throw_illegal_argument_exception() {
+
+        // given
+        final KeyPair keyPair = generator.generateKeyPair();
+        final String text = "Fancy text message";
+        final int id = 1;
+        final byte[] sign = Messages.sign(text + id, keyPair.getPrivate());
+
+        // when
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> subject
+                        .withId(2)
+                        .withText("Wrong text message")
+                        .withSignature(sign)
+                        .withPublicKey(keyPair.getPublic())
+                        .build()
+        ).withMessage("Failed signature verification");
     }
 }
