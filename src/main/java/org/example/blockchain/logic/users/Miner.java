@@ -8,6 +8,7 @@ import org.example.blockchain.logic.message.Message;
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Miner extends User {
 
@@ -46,7 +47,7 @@ public class Miner extends User {
 
         final long timestamp = new Date().getTime();
         final long createdBy = Thread.currentThread().getId();
-        final ArrayList<Message> messages = this.blockChain.getMessages();
+        final List<Message> messages = this.blockChain.getMessages();
 
         long id = 1L;
         String previousHash = "0";

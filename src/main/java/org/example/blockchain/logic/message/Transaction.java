@@ -2,6 +2,8 @@ package org.example.blockchain.logic.message;
 
 import org.example.blockchain.logic.users.User;
 
+import static java.util.Objects.isNull;
+
 public class Transaction extends MessageDecorator {
 
     private final User from;
@@ -14,6 +16,10 @@ public class Transaction extends MessageDecorator {
                        final long amount) {
 
         super(message);
+
+        if (isNull(from) || isNull(to)) {
+            throw new IllegalArgumentException("Transaction should have a sender and receiver");
+        }
 
         this.from = from;
         this.to = to;

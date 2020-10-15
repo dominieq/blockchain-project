@@ -13,8 +13,8 @@ public class BlockChain implements Serializable {
 
     private static BlockChain instance;
     private int numberOfZeros;
-    private final ArrayList<Message> messages;
-    private final ArrayList<Block> blocks;
+    private final List<Message> messages;
+    private final List<Block> blocks;
     private static final IdentifierStream IDENTIFIER_STREAM = new IdentifierStream();
     private static final Object MESSAGES_LOCK = new Object();
 
@@ -34,7 +34,7 @@ public class BlockChain implements Serializable {
 
     public synchronized boolean putLast(Block block) {
         if (block.getHash().startsWith("0".repeat(Math.max(0, this.numberOfZeros)))) {
-            ArrayList<Block> newBlocks = new ArrayList<>(this.blocks);
+            List<Block> newBlocks = new ArrayList<>(this.blocks);
             newBlocks.add(block);
 
             synchronized (MESSAGES_LOCK) {
@@ -88,7 +88,7 @@ public class BlockChain implements Serializable {
         return IDENTIFIER_STREAM.getNext();
     }
 
-    public boolean validate(ArrayList<Block> blocks) {
+    public boolean validate(List<Block> blocks) {
         for (int i = 0; i < blocks.size() - 1; i++) {
             Block block = blocks.get(i);
 
@@ -122,13 +122,13 @@ public class BlockChain implements Serializable {
         return numberOfZeros;
     }
 
-    public ArrayList<Message> getMessages() {
+    public List<Message> getMessages() {
         synchronized (MESSAGES_LOCK) {
             return new ArrayList<>(this.messages);
         }
     }
 
-    public ArrayList<Block> getBlocks() {
+    public List<Block> getBlocks() {
         return blocks;
     }
 }
