@@ -3,6 +3,9 @@ package org.example.blockchain.logic.message.builder;
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.Messages;
 import org.example.blockchain.logic.message.Transaction;
+import org.example.blockchain.logic.users.User;
+import org.example.blockchain.logic.users.builder.MinerBuilder;
+import org.example.blockchain.logic.users.builder.SenderBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +16,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class TransactionTest {
+public class TransactionBuilderTest {
 
     private static KeyPairGenerator generator;
     private TransactionBuilder subject;
@@ -45,11 +48,21 @@ public class TransactionTest {
                 .withPublicKey(keyPair.getPublic())
                 .build();
 
-        // TODO: Add from and to users
+        final User sender = SenderBuilder.builder()
+                .withName("TestSender")
+                .withKeyPair(keyPair)
+                .build();
+
+        final User receiver = MinerBuilder.builder()
+                .withName("TestReceiver")
+                .withKeyPair(keyPair)
+                .build();
 
         // when
         final Transaction transaction = subject
                 .withMessage(message)
+                .withFrom(sender)
+                .withTo(receiver)
                 .withAmount(100L)
                 .build();
 

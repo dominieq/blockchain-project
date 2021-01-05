@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class SecureMessageTest {
+public class SecureMessageBuilderTest {
 
     private static KeyPairGenerator generator;
     private SecureMessageBuilder subject;
