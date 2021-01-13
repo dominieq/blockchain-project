@@ -2,11 +2,9 @@ package org.example.blockchain.logic.users;
 
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.block.*;
-import org.example.blockchain.logic.block.builder.BlockBuilder;
 import org.example.blockchain.logic.message.Message;
 
 import java.security.KeyPair;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,12 +23,17 @@ public class Miner extends User {
             boolean finished = false;
 
             while (!finished) {
-                finished = this.mineBlock();
+                final Block prevBlock = blockChain.getLast();
+                final List<Message> messages = blockChain.getMessages();
+                final Block block = Blocks
+                        .mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
+
+                finished = blockChain.putLast(block);
             }
 
-            this.coins = 100L;
-            while (this.coins > 0) {
-                this.sendTransaction();
+            coins = 100L;
+            while (coins > 0) {
+                sendTransaction();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -39,64 +42,21 @@ public class Miner extends User {
 
     @Override
     protected synchronized void sendTransaction() {
-        this.coins--;
-    }
-
-    private boolean mineBlock() {
-        Block prevBlock = this.blockChain.getLast();
-
-        final long timestamp = new Date().getTime();
-        final long createdBy = Thread.currentThread().getId();
-        final List<Message> messages = this.blockChain.getMessages();
-
-        long id = 1L;
-        String previousHash = "0";
-        int nProgress = 0;
-
-        if (prevBlock != null) {
-            id = prevBlock.getId() + 1L;
-            previousHash = prevBlock.getHash();
-            nProgress = prevBlock.getNProgress();
-        }
-
-        final long start = System.currentTimeMillis();
-
-        int magicNumber = Blocks.findMagicNumber(
-                nProgress, id + timestamp + previousHash + createdBy
-        );
-
-        final long end = System.currentTimeMillis();
-        final long generationTime = (end - start) / 1000L;
-
-        String hash = Blocks.applySha256(id + timestamp + previousHash + createdBy + magicNumber);
-
-        Block block = BlockBuilder.builder()
-                .withId(id)
-                .withTimestamp(timestamp)
-                .withMagicNumber(magicNumber)
-                .withGenerationTime(generationTime)
-                .withHash(hash)
-                .withPreviousHash(previousHash)
-                .withCreatedBy(createdBy)
-                .withNProgress(nProgress)
-                .withMessages(prevBlock != null ? messages : new ArrayList<>())
-                .build();
-
-        return this.blockChain.putLast(block, generationTime);
+        coins--;
     }
 
     @Override
     protected String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     public long getCoins() {
-        return this.coins;
+        return coins;
     }
 
     @Override
-    public void setCoins(long coins) {
+    public void setCoins(final long coins) {
         this.coins = coins;
     }
 
@@ -107,6 +67,6 @@ public class Miner extends User {
 
     @Override
     protected KeyPair getKeyPair() {
-        return this.keyPair;
+        return keyPair;
     }
 }
