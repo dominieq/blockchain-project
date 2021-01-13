@@ -26,7 +26,7 @@ public class SecureMessage implements Message {
 
     @Override
     public int hashCode() {
-        return this.id;
+        return id;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class SecureMessage implements Message {
             return false;
         }
 
-        return this.id == ((SecureMessage) obj).getId();
+        return id == ((SecureMessage) obj).getId();
     }
 
     @Override

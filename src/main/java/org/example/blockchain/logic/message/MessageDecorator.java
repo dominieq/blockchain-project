@@ -4,11 +4,11 @@ public abstract class MessageDecorator implements Message {
 
     protected Message message;
 
-    public MessageDecorator(Message message) {
-        this.message = message;
+    public MessageDecorator(final Message message1) {
+        message = message1;
     }
 
     abstract protected Message getMessage();
 
-    abstract protected void setMessage(Message message);
+    abstract protected void setMessage(final Message message);
 }

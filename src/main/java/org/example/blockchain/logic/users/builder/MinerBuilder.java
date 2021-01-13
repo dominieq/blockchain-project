@@ -16,17 +16,17 @@ public final class MinerBuilder {
         return new MinerBuilder();
     }
 
-    public MinerBuilder withName(String name) {
+    public MinerBuilder withName(final String name) {
         this.name = name;
         return this;
     }
 
-    public MinerBuilder withKeyPair(KeyPair keyPair) {
+    public MinerBuilder withKeyPair(final KeyPair keyPair) {
         this.keyPair = keyPair;
         return this;
     }
 
-    public MinerBuilder withBlockChain(BlockChain blockChain) {
+    public MinerBuilder withBlockChain(final BlockChain blockChain) {
         this.blockChain = blockChain;
         return this;
     }

@@ -17,17 +17,17 @@ public final class SenderBuilder {
         return new SenderBuilder();
     }
 
-    public SenderBuilder withName(String name) {
+    public SenderBuilder withName(final String name) {
         this.name = name;
         return this;
     }
 
-    public SenderBuilder withKeyPair(KeyPair keyPair) {
+    public SenderBuilder withKeyPair(final KeyPair keyPair) {
         this.keyPair = keyPair;
         return this;
     }
 
-    public SenderBuilder withBlockChain(BlockChain blockChain) {
+    public SenderBuilder withBlockChain(final BlockChain blockChain) {
         this.blockChain = blockChain;
         return this;
     }

@@ -4,9 +4,9 @@ import java.security.*;
 
 public final class Messages {
 
-    public static boolean verify(String data, byte[] signature, PublicKey key) {
+    public static boolean verify(final String data, final byte[] signature, final PublicKey key) {
         try {
-            Signature sig = Signature.getInstance("SHA256withDSA");
+            final Signature sig = Signature.getInstance("SHA256withDSA");
             sig.initVerify(key);
             sig.update(data.getBytes());
             return sig.verify(signature);
@@ -17,9 +17,9 @@ public final class Messages {
         return false;
     }
 
-    public static byte[] sign(String data, PrivateKey key) {
+    public static byte[] sign(final String data, final PrivateKey key) {
         try {
-            Signature sig = Signature.getInstance("SHA256withDSA");
+            final Signature sig = Signature.getInstance("SHA256withDSA");
             sig.initSign(key);
             sig.update(data.getBytes());
             return sig.sign();

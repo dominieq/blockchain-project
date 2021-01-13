@@ -19,9 +19,9 @@ public class BlockChain implements Serializable {
     private static final Object MESSAGES_LOCK = new Object();
 
     private BlockChain() {
-        this.numberOfZeros = 0;
-        this.messages = new ArrayList<>();
-        this.blocks = new ArrayList<>();
+        numberOfZeros = 0;
+        messages = new ArrayList<>();
+        blocks = new ArrayList<>();
     }
 
     public static BlockChain getInstance() {
@@ -32,16 +32,16 @@ public class BlockChain implements Serializable {
         return instance;
     }
 
-    public synchronized boolean putLast(Block block) {
-        if (block.getHash().startsWith("0".repeat(Math.max(0, this.numberOfZeros)))) {
-            List<Block> newBlocks = new ArrayList<>(this.blocks);
+    public synchronized boolean putLast(final Block block) {
+        if (block.getHash().startsWith("0".repeat(Math.max(0, numberOfZeros)))) {
+            final List<Block> newBlocks = new ArrayList<>(blocks);
             newBlocks.add(block);
 
             synchronized (MESSAGES_LOCK) {
                 if (validate(newBlocks)) {
-                    this.messages.removeAll(block.getMessages());
+                    messages.removeAll(block.getMessages());
 
-                    this.blocks.add(block);
+                    blocks.add(block);
                     return true;
                 }
             }
@@ -50,16 +50,16 @@ public class BlockChain implements Serializable {
         return false;
     }
 
-    public synchronized boolean putLast(Block block, long generationTime) {
-        boolean isIn = this.putLast(block);
+    public synchronized boolean putLast(final Block block, final long generationTime) {
+        final boolean isIn = putLast(block);
 
         if (isIn) {
             if (generationTime < 60L) {
-                if (this.numberOfZeros < 3) {
-                    block.setNProgress(++this.numberOfZeros);
+                if (numberOfZeros < 3) {
+                    block.setNProgress(++numberOfZeros);
                 }
-            } else if (this.numberOfZeros > 0) {
-                block.setNProgress(--this.numberOfZeros);
+            } else if (numberOfZeros > 0) {
+                block.setNProgress(--numberOfZeros);
             }
         }
 
@@ -67,17 +67,17 @@ public class BlockChain implements Serializable {
     }
 
     public synchronized Block getLast() {
-        return !this.blocks.isEmpty() ? this.blocks.get(this.blocks.size() - 1) : null;
+        return !blocks.isEmpty() ? blocks.get(blocks.size() - 1) : null;
     }
 
-    public boolean addMessage(Message message) {
+    public boolean addMessage(final Message message) {
         boolean isIn = false;
 
         synchronized (MESSAGES_LOCK) {
-            if (this.messages.isEmpty()) {
-                isIn = this.messages.add(message);
-            } else if (message.getId() > this.messages.get(this.messages.size() - 1).getId()) {
-                isIn = this.messages.add(message);
+            if (messages.isEmpty()) {
+                isIn = messages.add(message);
+            } else if (message.getId() > messages.get(messages.size() - 1).getId()) {
+                isIn = messages.add(message);
             }
         }
 
@@ -88,11 +88,11 @@ public class BlockChain implements Serializable {
         return IDENTIFIER_STREAM.getNext();
     }
 
-    public boolean validate(List<Block> blocks) {
+    public boolean validate(final List<Block> blocks) {
         for (int i = 0; i < blocks.size() - 1; i++) {
-            Block block = blocks.get(i);
+            final Block block = blocks.get(i);
 
-            String hash = Blocks.applySha256(
+            final String hash = Blocks.applySha256(
                     block.getId() +
                             block.getTimestamp() +
                             block.getPreviousHash() +
@@ -105,7 +105,7 @@ public class BlockChain implements Serializable {
             }
         }
 
-        List<Message> messages = blocks.stream()
+        final List<Message> messages = blocks.stream()
                 .flatMap(block -> block.getMessages().stream())
                 .collect(Collectors.toList());
 
@@ -124,7 +124,7 @@ public class BlockChain implements Serializable {
 
     public List<Message> getMessages() {
         synchronized (MESSAGES_LOCK) {
-            return new ArrayList<>(this.messages);
+            return new ArrayList<>(messages);
         }
     }
 

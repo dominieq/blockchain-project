@@ -6,14 +6,14 @@ import java.util.Random;
 
 public final class Blocks {
 
-    public static String applySha256(String input) {
+    public static String applySha256(final String input) {
         try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
 
-            StringBuilder hexString = new StringBuilder();
+            final StringBuilder hexString = new StringBuilder();
             for (byte elem: hash) {
-                String hex = Integer.toHexString(0xff & elem);
+                final String hex = Integer.toHexString(0xff & elem);
                 if(hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
@@ -26,11 +26,11 @@ public final class Blocks {
     }
 
     public static int findMagicNumber(int numberOfZeros, String input) {
-        Random random = new Random();
+        final Random random = new Random();
         int magicNumber = random.nextInt();
 
         String hash = applySha256(input + magicNumber);
-        String regex = "^0{" + numberOfZeros + "}[1-9a-zA-Z][\\da-zA-Z]+";
+        final String regex = "^0{" + numberOfZeros + "}[1-9a-zA-Z][\\da-zA-Z]+";
 
         while (!hash.matches(regex)) {
             magicNumber = random.nextInt();

@@ -11,16 +11,19 @@ public abstract class User implements Runnable {
     protected final KeyPair keyPair;
     protected final BlockChain blockChain;
 
-    public User(String name, KeyPair keyPair, BlockChain blockChain) {
-        this.name = name;
+    public User(final String name1,
+                final KeyPair keyPair1,
+                final BlockChain blockChain1) {
+
+        this.name = name1;
         this.coins = 100L;
-        this.keyPair = keyPair;
-        this.blockChain = blockChain;
+        this.keyPair = keyPair1;
+        this.blockChain = blockChain1;
     }
 
     @Override
     public String toString() {
-        return this.name;
+        return name;
     }
 
     abstract protected void sendTransaction();
@@ -29,7 +32,7 @@ public abstract class User implements Runnable {
 
     abstract protected long getCoins();
 
-    abstract protected void setCoins(long coins);
+    abstract protected void setCoins(final long coins);
 
     abstract protected KeyPair getKeyPair();
 

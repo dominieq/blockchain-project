@@ -92,7 +92,7 @@ public class Block implements Serializable {
         return nProgress;
     }
 
-    public void setNProgress(int nProgress) {
+    public void setNProgress(final int nProgress) {
         this.nProgress = nProgress;
     }
 
