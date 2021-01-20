@@ -5,6 +5,7 @@ import org.example.blockchain.logic.block.*;
 import org.example.blockchain.logic.message.Message;
 
 import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class Miner extends User {
 
             while (!finished) {
                 final Block prevBlock = blockChain.getLast();
-                final List<Message> messages = blockChain.getMessages();
+                final List<Message> messages = new ArrayList<>(blockChain.getMessages());
                 final Block block = Blocks
                         .mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
 
