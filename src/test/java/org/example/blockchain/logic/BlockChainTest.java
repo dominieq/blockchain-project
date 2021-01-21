@@ -733,6 +733,42 @@ public class BlockChainTest {
         verify(message, times(1)).getId();
     }
 
+    //########################################################//
+    //                                                        //
+    //                   Test other methods                   //
+    //                                                        //
+    //########################################################//
+
+    @Test
+    public void should_get_the_same_instance() {
+
+        // when
+        final BlockChain expected = BlockChain.getInstance();
+
+        // then
+        assertThat(subject).isEqualTo(expected);
+    }
+
+    @Test
+    public void should_get_unique_identifier()
+            throws NoSuchFieldException, IllegalAccessException {
+
+        // given
+        final IdentifierStream identifierStream = mock(IdentifierStream.class);
+        doReturn(1).when(identifierStream).getNext();
+
+        final Field field = BlockChain.class.getDeclaredField("identifierStream");
+        field.setAccessible(true);
+        field.set(subject, identifierStream);
+
+        // when
+        final int actual = subject.getUniqueIdentifier();
+
+        // then
+        assertThat(actual).isOne();
+        verify(identifierStream, times(1)).getNext();
+    }
+
     private void verifyBlockWasValidated(final Block block, final int times) {
         verify(block, times(times)).getId();
         verify(block, times(times)).getTimestamp();

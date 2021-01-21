@@ -21,7 +21,7 @@ public class Sender extends User {
 
             while (!finished) {
                 final String text = name + ": Hello there!";
-                final int id = BlockChain.getUniqueIdentifier();
+                final int id = blockChain.getUniqueIdentifier();
                 final byte[] signature = Messages.sign(text + id, keyPair.getPrivate());
                 final SecureMessage message = new SecureMessage(text, id, signature, keyPair.getPublic());
 

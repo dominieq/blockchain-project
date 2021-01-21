@@ -18,13 +18,15 @@ public class BlockChain implements Serializable {
     private int numberOfZeros;
     private final List<Message> messages;
     private final List<Block> blocks;
-    private static final IdentifierStream IDENTIFIER_STREAM = new IdentifierStream();
+    private final IdentifierStream identifierStream;
+    private static final Object IDENTIFIER_LOCK = new Object();
     private static final Object MESSAGES_LOCK = new Object();
 
     private BlockChain() {
         numberOfZeros = 0;
         messages = new ArrayList<>();
         blocks = new ArrayList<>();
+        identifierStream = new IdentifierStream();
     }
 
     public static BlockChain getInstance() {
@@ -84,8 +86,10 @@ public class BlockChain implements Serializable {
         return false;
     }
 
-    public synchronized static int getUniqueIdentifier() {
-        return IDENTIFIER_STREAM.getNext();
+    public int getUniqueIdentifier() {
+        synchronized (IDENTIFIER_LOCK) {
+            return identifierStream.getNext();
+        }
     }
 
     public boolean validateBlock(final Block block) {
