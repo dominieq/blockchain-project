@@ -1,4 +1,4 @@
-package org.example.blockchain.logic.messages;
+package org.example.blockchain.logic.message;
 
 public interface Message {
 

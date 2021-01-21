@@ -1,13 +1,16 @@
 package org.example.blockchain.logic.users;
 
 import org.example.blockchain.logic.BlockChain;
-import org.example.blockchain.logic.messages.*;
+import org.example.blockchain.logic.message.*;
 
 import java.security.KeyPair;
 
 public class Sender extends User {
 
-    public Sender(String name, KeyPair keyPair, BlockChain blockChain) {
+    public Sender(final String name,
+                  final KeyPair keyPair,
+                  final BlockChain blockChain) {
+
         super(name, keyPair, blockChain);
     }
 
@@ -17,12 +20,12 @@ public class Sender extends User {
             boolean finished = false;
 
             while (!finished) {
-                String text = this.name + ": Hello there!";
-                int id = BlockChain.getUniqueIdentifier();
-                byte[] signature = Messages.sign(text + id, this.keyPair.getPrivate());
-                SecureMessage message = new SecureMessage(text, id, signature, this.keyPair.getPublic());
+                final String text = name + ": Hello there!";
+                final int id = blockChain.getUniqueIdentifier();
+                final byte[] signature = Messages.sign(text + id, keyPair.getPrivate());
+                final SecureMessage message = new SecureMessage(text, id, signature, keyPair.getPublic());
 
-                finished = this.blockChain.addMessage(message);
+                finished = blockChain.addMessage(message);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -36,26 +39,26 @@ public class Sender extends User {
 
     @Override
     protected String getName() {
-        return this.name;
+        return name;
     }
 
     @Override
     protected long getCoins() {
-        return this.coins;
+        return coins;
     }
 
     @Override
-    protected void setCoins(long coins) {
+    protected void setCoins(final long coins) {
         this.coins = coins;
     }
 
     @Override
     protected KeyPair getKeyPair() {
-        return this.keyPair;
+        return keyPair;
     }
 
     @Override
     protected BlockChain getBlockChain() {
-        return this.blockChain;
+        return blockChain;
     }
 }

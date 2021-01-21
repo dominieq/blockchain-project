@@ -1,4 +1,4 @@
-package org.example.blockchain.logic.messages;
+package org.example.blockchain.logic.message;
 
 import java.security.*;
 
@@ -9,7 +9,11 @@ public class SecureMessage implements Message {
     private final byte[] signature;
     private final PublicKey publicKey;
 
-    public SecureMessage(String text, int id, byte[] signature, PublicKey publicKey) throws IllegalArgumentException {
+    public SecureMessage(final String text,
+                         final int id,
+                         final byte[] signature,
+                         final PublicKey publicKey) throws IllegalArgumentException {
+
         if (!Messages.verify(text + id, signature, publicKey)) {
             throw new IllegalArgumentException("Failed signature verification");
         }
@@ -22,7 +26,7 @@ public class SecureMessage implements Message {
 
     @Override
     public int hashCode() {
-        return this.id;
+        return id;
     }
 
     @Override
@@ -31,12 +35,12 @@ public class SecureMessage implements Message {
             return false;
         }
 
-        return this.id == ((SecureMessage) obj).getId();
+        return id == ((SecureMessage) obj).getId();
     }
 
     @Override
     public String toString() {
-        return "Identifier: " + id + "Content: " + text;
+        return "Identifier: " + id + " Content: " + text;
     }
 
     @Override

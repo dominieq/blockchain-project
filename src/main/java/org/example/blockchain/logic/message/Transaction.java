@@ -1,6 +1,8 @@
-package org.example.blockchain.logic.messages;
+package org.example.blockchain.logic.message;
 
 import org.example.blockchain.logic.users.User;
+
+import static java.util.Objects.isNull;
 
 public class Transaction extends MessageDecorator {
 
@@ -8,8 +10,16 @@ public class Transaction extends MessageDecorator {
     private final User to;
     private final long amount;
 
-    public Transaction(Message message, User from, User to, long amount) {
+    public Transaction(final Message message,
+                       final User from,
+                       final User to,
+                       final long amount) {
+
         super(message);
+
+        if (isNull(from) || isNull(to)) {
+            throw new IllegalArgumentException("Transaction should have a sender and receiver");
+        }
 
         this.from = from;
         this.to = to;
@@ -18,7 +28,7 @@ public class Transaction extends MessageDecorator {
 
     @Override
     public int hashCode() {
-        return this.message.getId();
+        return message.getId();
     }
 
     @Override
@@ -27,31 +37,31 @@ public class Transaction extends MessageDecorator {
             return false;
         }
 
-        return this.message.getId() == ((Transaction) obj).getMessage().getId();
+        return message.getId() == ((Transaction) obj).getMessage().getId();
     }
 
     @Override
     public String toString() {
-        return this.from + " " + this.message.getText() + " " + this.to;
+        return from + " " + message.getText() + " " + to;
     }
 
     @Override
     public String getText() {
-        return this.message.getText();
+        return message.getText();
     }
 
     @Override
     public int getId() {
-        return this.message.getId();
+        return message.getId();
     }
 
     @Override
     public Message getMessage() {
-        return this.message;
+        return message;
     }
 
     @Override
-    public void setMessage(Message message) {
+    public void setMessage(final Message message) {
         this.message = message;
     }
 

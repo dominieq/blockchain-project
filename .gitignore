@@ -29,6 +29,7 @@
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
+.idea/**/encodings.xml
 *.iml
 *.ipr
 

@@ -1,27 +1,32 @@
 package org.example.blockchain.logic;
 
-import org.example.blockchain.logic.blocks.Block;
-import org.example.blockchain.logic.blocks.Blocks;
-import org.example.blockchain.logic.messages.Message;
+import org.example.blockchain.logic.block.Block;
+import org.example.blockchain.logic.block.Blocks;
+import org.example.blockchain.logic.message.Message;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 public class BlockChain implements Serializable {
 
     private static BlockChain instance;
     private int numberOfZeros;
-    private final ArrayList<Message> messages;
-    private final ArrayList<Block> blocks;
-    private static final IdentifierStream IDENTIFIER_STREAM = new IdentifierStream();
+    private final List<Message> messages;
+    private final List<Block> blocks;
+    private final IdentifierStream identifierStream;
+    private static final Object IDENTIFIER_LOCK = new Object();
     private static final Object MESSAGES_LOCK = new Object();
 
     private BlockChain() {
-        this.numberOfZeros = 0;
-        this.messages = new ArrayList<>();
-        this.blocks = new ArrayList<>();
+        numberOfZeros = 0;
+        messages = new ArrayList<>();
+        blocks = new ArrayList<>();
+        identifierStream = new IdentifierStream();
     }
 
     public static BlockChain getInstance() {
@@ -32,34 +37,32 @@ public class BlockChain implements Serializable {
         return instance;
     }
 
-    public synchronized boolean putLast(Block block) {
-        if (block.getHash().startsWith("0".repeat(Math.max(0, this.numberOfZeros)))) {
-            ArrayList<Block> newBlocks = new ArrayList<>(this.blocks);
-            newBlocks.add(block);
+    public synchronized boolean putLast(final Block block) {
+        if (((blocks.isEmpty() && validateBlock(block)) || validateBlockPair(getLast(), block)) &&
+                block.getHash().startsWith("0".repeat(Math.max(0, numberOfZeros)))) {
 
             synchronized (MESSAGES_LOCK) {
-                if (validate(newBlocks)) {
-                    this.messages.removeAll(block.getMessages());
-
-                    this.blocks.add(block);
-                    return true;
-                }
+                messages.removeAll(block.getMessages());
+                blocks.add(block);
+                return true;
             }
         }
 
         return false;
     }
 
-    public synchronized boolean putLast(Block block, long generationTime) {
-        boolean isIn = this.putLast(block);
+    public synchronized boolean putLast(final Block block, final long generationTime) {
+        final boolean isIn = putLast(block);
 
         if (isIn) {
             if (generationTime < 60L) {
-                if (this.numberOfZeros < 3) {
-                    block.setNProgress(++this.numberOfZeros);
+                if (numberOfZeros < 3) {
+                    block.setNProgress(++numberOfZeros);
+                } else {
+                    block.setNProgress(numberOfZeros);
                 }
-            } else if (this.numberOfZeros > 0) {
-                block.setNProgress(--this.numberOfZeros);
+            } else if (numberOfZeros > 0) {
+                block.setNProgress(--numberOfZeros);
             }
         }
 
@@ -67,50 +70,83 @@ public class BlockChain implements Serializable {
     }
 
     public synchronized Block getLast() {
-        return !this.blocks.isEmpty() ? this.blocks.get(this.blocks.size() - 1) : null;
+        return !blocks.isEmpty() ? blocks.get(blocks.size() - 1) : null;
     }
 
-    public boolean addMessage(Message message) {
-        boolean isIn = false;
+    public boolean addMessage(final Message message) {
+        if (isNull(message)) return false;
 
         synchronized (MESSAGES_LOCK) {
-            if (this.messages.isEmpty()) {
-                isIn = this.messages.add(message);
-            } else if (message.getId() > this.messages.get(this.messages.size() - 1).getId()) {
-                isIn = this.messages.add(message);
+            if (messages.isEmpty()) {
+                return messages.add(message);
+            } else if (validateMessagePair(messages.get(messages.size() - 1), message)) {
+                return messages.add(message);
             }
         }
-
-        return isIn;
+        return false;
     }
 
-    public synchronized static int getUniqueIdentifier() {
-        return IDENTIFIER_STREAM.getNext();
+    public int getUniqueIdentifier() {
+        synchronized (IDENTIFIER_LOCK) {
+            return identifierStream.getNext();
+        }
     }
 
-    public boolean validate(ArrayList<Block> blocks) {
+    public boolean validateBlock(final Block block) {
+        if (isNull(block)) return false;
+
+        final String hash = Blocks.applySha256(
+                block.getId() +
+                        block.getTimestamp() +
+                        block.getPreviousHash() +
+                        block.getCreatedBy() +
+                        block.getMagicNumber());
+
+        return Objects.equals(block.getHash(), hash);
+    }
+
+    public boolean validateBlockPair(final Block prevBlock, final Block block) {
+        if (isNull(prevBlock) ||  isNull(block)) return false;
+        if (!validateBlock(block)) return false;
+
+        final String hash = Blocks.applySha256(
+                prevBlock.getId() +
+                        prevBlock.getTimestamp() +
+                        prevBlock.getPreviousHash() +
+                        prevBlock.getCreatedBy() +
+                        prevBlock.getMagicNumber());
+
+        return Objects.equals(hash, block.getPreviousHash());
+    }
+
+    public boolean validateBlocks(final List<Block> blocks) {
+        if (blocks.isEmpty()) return true;
+        if (!validateBlock(blocks.get(0))) return false;
+        if (blocks.size() == 1) return true;
+
         for (int i = 0; i < blocks.size() - 1; i++) {
-            Block block = blocks.get(i);
-
-            String hash = Blocks.applySha256(
-                    block.getId() +
-                            block.getTimestamp() +
-                            block.getPreviousHash() +
-                            block.getCreatedBy() +
-                            block.getMagicNumber()
-            );
-
-            if (!hash.equals(blocks.get(i + 1).getPreviousHash())) {
+            if (!validateBlockPair(blocks.get(i), blocks.get(i + 1))) {
                 return false;
             }
         }
 
-        List<Message> messages = blocks.stream()
+        final List<Message> messages = blocks.stream()
                 .flatMap(block -> block.getMessages().stream())
                 .collect(Collectors.toList());
 
+        return validateMessages(messages);
+    }
+
+    public boolean validateMessagePair(final Message prevMessage, final Message message) {
+        if (isNull(prevMessage) || isNull(message)) return false;
+        return prevMessage.getId() < message.getId();
+    }
+
+    public boolean validateMessages(final List<Message> messages) {
+        if (messages.isEmpty() || messages.size() == 1) return true;
+
         for (int i = 0; i < messages.size() - 1; i++) {
-            if (messages.get(i).getId() > messages.get(i + 1).getId()) {
+            if (!validateMessagePair(messages.get(i), messages.get(i + 1))) {
                 return false;
             }
         }
@@ -122,13 +158,13 @@ public class BlockChain implements Serializable {
         return numberOfZeros;
     }
 
-    public ArrayList<Message> getMessages() {
+    public List<Message> getMessages() {
         synchronized (MESSAGES_LOCK) {
-            return new ArrayList<>(this.messages);
+            return messages;
         }
     }
 
-    public ArrayList<Block> getBlocks() {
+    public List<Block> getBlocks() {
         return blocks;
     }
 }

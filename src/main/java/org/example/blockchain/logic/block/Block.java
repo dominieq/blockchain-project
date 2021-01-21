@@ -1,9 +1,9 @@
-package org.example.blockchain.logic.blocks;
+package org.example.blockchain.logic.block;
 
-import org.example.blockchain.logic.messages.Message;
+import org.example.blockchain.logic.message.Message;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
 public class Block implements Serializable {
 
@@ -15,23 +15,34 @@ public class Block implements Serializable {
     private final long createdBy;
     private final long generationTime;
     private int nProgress;
-    private final ArrayList<Message> messages;
+    private final List<Message> messages;
 
-    public Block(BlockBuilder blockBuilder) {
-        this.id = blockBuilder.getId();
-        this.timestamp = blockBuilder.getTimestamp();
-        this.magicNumber = blockBuilder.getMagicNumber();
-        this.generationTime = blockBuilder.getGenerationTime();
-        this.hash = blockBuilder.getHash();
-        this.previousHash = blockBuilder.getPreviousHash();
-        this.createdBy = blockBuilder.getCreatedBy();
-        this.nProgress = blockBuilder.getNProgress();
-        this.messages = blockBuilder.getMessages();
+    public Block(final long id,
+                 final long timestamp,
+                 final int magicNumber,
+                 final String hash,
+                 final String previousHash,
+                 final long createdBy,
+                 final long generationTime,
+                 final int nProgress,
+                 final List<Message> messages) {
+
+        this.id = id;
+        this.timestamp = timestamp;
+        this.magicNumber = magicNumber;
+        this.hash = hash;
+        this.previousHash = previousHash;
+        this.createdBy = createdBy;
+        this.generationTime = generationTime;
+        this.nProgress = nProgress;
+        this.messages = messages;
     }
 
     @Override
     public String toString() {
-        String blockData = this.getMessagesAsString();
+        String blockData = messages.stream()
+                .map(Message::toString)
+                .reduce("", (all, message) -> all + "\n" + message);
 
         if (blockData.equals(""))
             blockData = "No transactions";
@@ -47,12 +58,6 @@ public class Block implements Serializable {
                 "Block data: " + blockData + "\n" +
                 "Block was generating for " + generationTime + " seconds\n" +
                 "N was was changed to " + nProgress + "\n";
-    }
-
-    public String getMessagesAsString() {
-        return messages.stream()
-                .map(Message::toString)
-                .reduce("", (all, message) -> all + "\n" + message);
     }
 
     public long getId() {
@@ -87,11 +92,11 @@ public class Block implements Serializable {
         return nProgress;
     }
 
-    public void setNProgress(int nProgress) {
+    public void setNProgress(final int nProgress) {
         this.nProgress = nProgress;
     }
 
-    public ArrayList<Message> getMessages() {
+    public List<Message> getMessages() {
         return messages;
     }
 }
