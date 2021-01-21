@@ -50,24 +50,29 @@ public class BlockChainTest {
     @Test
     public void should_return_true_when_validating_block() {
 
+        // given
+        final Block block = spy(getBlock().build());
+
         // when
-        final boolean actual = subject.validateBlock(getValidBlockForTests().build());
+        final boolean actual = subject.validateBlock(block);
 
         // then
         assertThat(actual).isTrue();
+        verifyBlockWasValidated(block, 1);
     }
 
     @Test
     public void should_return_false_when_validating_invalid_block() {
 
         // given
-        final Block block = getValidBlockForTests().withHash("0").build();
+        final Block block = spy(getBlock().withHash("0").build());
 
         // when
         final boolean actual = subject.validateBlock(block);
 
         // then
         assertThat(actual).isFalse();
+        verifyBlockWasValidated(block, 1);
     }
 
     //########################################################//
@@ -90,14 +95,16 @@ public class BlockChainTest {
     public void should_return_true_when_validating_ordered_pair_with_invalid_prev_block() {
 
         // given
-        final Block prevBlock = getMockedBlock();
         final String prevHash = Blocks.applySha256(1L + 1L + "333" + 1L + -1);
-        doReturn(prevHash).when(prevBlock).getHash();
-        doReturn("666").when(prevBlock).getPreviousHash();
+        final Block prevBlock = spy(getBlock()
+                .withPreviousHash("666")
+                .withHash(prevHash)
+                .build());
 
-        final Block block = getMockedBlock();
-        doReturn(Blocks.applySha256(1L + 1L + prevHash + 1L + -1)).when(block).getHash();
-        doReturn(prevHash).when(block).getPreviousHash();
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
+                .build());
 
         // when
         final boolean actual = subject.validateBlockPair(prevBlock, block);
@@ -112,9 +119,7 @@ public class BlockChainTest {
 
         // given
         final Block prevBlock = mock(Block.class);
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getHash();
-        doReturn("0").when(block).getPreviousHash();
+        final Block block = spy(getBlock().withHash("0").build());
 
         // when
         final boolean actual = subject.validateBlockPair(prevBlock, block);
@@ -129,14 +134,8 @@ public class BlockChainTest {
     public void should_return_false_when_validating_unordered_pair_of_valid_block() {
 
         // given
-        final Block prevBlock = getMockedBlock();
-        final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn(prevHash).when(prevBlock).getHash();
-        doReturn("0").when(prevBlock).getPreviousHash();
-
-        final Block block = getMockedBlock();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1)).when(block).getHash();
-        doReturn("0").when(block).getPreviousHash();
+        final Block prevBlock = spy(getBlock().build());
+        final Block block = spy(getBlock().build());
 
         // when
         final boolean actual = subject.validateBlockPair(prevBlock, block);
@@ -150,14 +149,12 @@ public class BlockChainTest {
     public void should_return_true_when_validating_ordered_pair_of_valid_blocks() {
 
         // given
-        final Block prevBlock = getMockedBlock();
         final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn(prevHash).when(prevBlock).getHash();
-        doReturn("0").when(prevBlock).getPreviousHash();
-
-        final Block block = getMockedBlock();
-        doReturn(Blocks.applySha256(1L + 1L + prevHash + 1L + -1)).when(block).getHash();
-        doReturn(prevHash).when(block).getPreviousHash();
+        final Block prevBlock = spy(getBlock().build());
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
+                .build());
 
         // when
         final boolean actual = subject.validateBlockPair(prevBlock, block);
@@ -307,10 +304,7 @@ public class BlockChainTest {
     public void should_return_true_when_validating_blocks_with_only_one_valid_block() {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1)).when(block).getHash();
-        doReturn(Collections.emptyList()).when(block).getMessages();
+        final Block block = spy(getBlock().build());
 
         // when
         final boolean actual = subject.validateBlocks(Collections.singletonList(block));
@@ -325,12 +319,8 @@ public class BlockChainTest {
     public void should_return_false_when_validating_blocks_with_only_one_invalid_block() {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn("0").when(block).getHash();
-        doReturn(Collections.emptyList()).when(block).getMessages();
+        final Block block = spy(getBlock().withHash("0").build());
 
-        // when
         // when
         final boolean actual = subject.validateBlocks(Collections.singletonList(block));
 
@@ -344,16 +334,12 @@ public class BlockChainTest {
     public void should_return_true_when_validating_blocks_with_only_ordered_pairs_of_valid_blocks() {
 
         // given
-        final Block prevBlock = getMockedBlock();
         final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn("0").when(prevBlock).getPreviousHash();
-        doReturn(prevHash).when(prevBlock).getHash();
-        doReturn(Collections.emptyList()).when(prevBlock).getMessages();
-
-        final Block block = getMockedBlock();
-        doReturn(prevHash).when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + prevHash + 1L + -1)).when(block).getHash();
-        doReturn(Collections.emptyList()).when(block).getMessages();
+        final Block prevBlock = spy(getBlock().build());
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
+                .build());
 
         // when
         final boolean actual = subject.validateBlocks(Arrays.asList(prevBlock, block));
@@ -369,16 +355,12 @@ public class BlockChainTest {
     public void should_return_false_when_validating_blocks_with_at_least_one_ordered_pair_of_invalid_blocks() {
 
         // given
-        final Block prevBlock = getMockedBlock();
         final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn("0").when(prevBlock).getPreviousHash();
-        doReturn(prevHash).when(prevBlock).getHash();
-        doReturn(Collections.emptyList()).when(prevBlock).getMessages();
-
-        final Block block = getMockedBlock();
-        doReturn(prevHash).when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "666" + 1L + -1)).when(block).getHash();
-        doReturn(Collections.emptyList()).when(block).getMessages();
+        final Block prevBlock = spy(getBlock().build());
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + "666" + 1L + -1))
+                .build());
 
         // when
         final boolean actual = subject.validateBlocks(Arrays.asList(prevBlock, block));
@@ -395,16 +377,8 @@ public class BlockChainTest {
     public void should_return_false_when_validating_blocks_with_at_least_one_unordered_pair_of_valid_blocks() {
 
         // given
-        final Block prevBlock = getMockedBlock();
-        final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn("0").when(prevBlock).getPreviousHash();
-        doReturn(prevHash).when(prevBlock).getHash();
-        doReturn(Collections.emptyList()).when(prevBlock).getMessages();
-
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1)).when(block).getHash();
-        doReturn(Collections.emptyList()).when(block).getMessages();
+        final Block prevBlock = spy(getBlock().build());
+        final Block block = spy(getBlock().build());
 
         // when
         final boolean actual = subject.validateBlocks(Arrays.asList(prevBlock, block));
@@ -420,22 +394,20 @@ public class BlockChainTest {
     public void should_return_true_when_validating_ordered_and_valid_block_list_with_ordered_messages() {
 
         // given
-        final Block prevBlock = getMockedBlock();
-        final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn("0").when(prevBlock).getPreviousHash();
-        doReturn(prevHash).when(prevBlock).getHash();
-
         final Message prevMessage = mock(Message.class);
         doReturn(1).when(prevMessage).getId();
-        doReturn(Collections.singletonList(prevMessage)).when(prevBlock).getMessages();
-
-        final Block block = getMockedBlock();
-        doReturn(prevHash).when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + prevHash + 1L + -1)).when(block).getHash();
-
         final Message message = mock(Message.class);
         doReturn(2).when(message).getId();
-        doReturn(Collections.singletonList(message)).when(block).getMessages();
+
+        final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
+        final Block prevBlock = spy(getBlock()
+                .withMessages(Collections.singletonList(prevMessage))
+                .build());
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
+                .withMessages(Collections.singletonList(message))
+                .build());
 
         // when
         final boolean actual = subject.validateBlocks(Arrays.asList(prevBlock, block));
@@ -454,22 +426,20 @@ public class BlockChainTest {
     public void should_return_false_when_validating_ordered_and_valid_block_list_but_with_unordered_messages(final int prevId) {
 
         // given
-        final Block prevBlock = getMockedBlock();
-        final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn("0").when(prevBlock).getPreviousHash();
-        doReturn(prevHash).when(prevBlock).getHash();
-
         final Message prevMessage = mock(Message.class);
         doReturn(prevId).when(prevMessage).getId();
-        doReturn(Collections.singletonList(prevMessage)).when(prevBlock).getMessages();
-
-        final Block block = getMockedBlock();
-        doReturn(prevHash).when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + prevHash + 1L + -1)).when(block).getHash();
-
         final Message message = mock(Message.class);
         doReturn(1).when(message).getId();
-        doReturn(Collections.singletonList(message)).when(block).getMessages();
+
+        final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
+        final Block prevBlock = spy(getBlock()
+                .withMessages(Collections.singletonList(prevMessage))
+                .build());
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
+                .withMessages(Collections.singletonList(message))
+                .build());
 
         // when
         final boolean actual = subject.validateBlocks(Arrays.asList(prevBlock, block));
@@ -504,9 +474,7 @@ public class BlockChainTest {
     public void should_not_put_invalid_block() {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn("0").when(block).getHash();
+        final Block block = spy(getBlock().withHash("0").build());
 
         // when
         final boolean actual = subject.putLast(block);
@@ -522,9 +490,7 @@ public class BlockChainTest {
             throws NoSuchFieldException, IllegalAccessException {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1)).when(block).getHash();
+        final Block block = spy(getBlock().build());
 
         Field field = BlockChain.class.getDeclaredField("numberOfZeros");
         field.setAccessible(true);
@@ -544,13 +510,14 @@ public class BlockChainTest {
     public void should_not_put_block_because_last_pair_is_unordered() {
 
         // given
-        final Block prevBlock = getMockedBlock();
-        doReturn("333").when(prevBlock).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "333" + 1L + -1)).when(prevBlock).getHash();
-
-        final Block block = getMockedBlock();
-        doReturn("666").when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "666" + 1L + -1)).when(block).getHash();
+        final Block prevBlock = spy(getBlock()
+                .withPreviousHash("333")
+                .withHash(Blocks.applySha256(1L + 1L + "333" + 1L + -1))
+                .build());
+        final Block block = spy(getBlock()
+                .withPreviousHash("666")
+                .withHash(Blocks.applySha256(1L + 1L + "666" + 1L + -1))
+                .build());
 
         subject.getBlocks().add(prevBlock);
 
@@ -569,9 +536,7 @@ public class BlockChainTest {
     public void should_put_valid_block_when_block_list_is_empty() {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1)).when(block).getHash();
+        final Block block = spy(getBlock().build());
 
         // when
         final boolean actual = subject.putLast(block);
@@ -587,14 +552,12 @@ public class BlockChainTest {
     public void should_put_valid_block_when_block_list_is_not_empty() {
 
         // given
-        final Block prevBlock = getMockedBlock();
         final String prevHash = Blocks.applySha256(1L + 1L + "0" + 1L + -1);
-        doReturn("0").when(prevBlock).getPreviousHash();
-        doReturn(prevHash).when(prevBlock).getHash();
-
-        final Block block = getMockedBlock();
-        doReturn(prevHash).when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + prevHash + 1L + -1)).when(block).getHash();
+        final Block prevBlock = spy(getBlock().build());
+        final Block block = spy(getBlock()
+                .withPreviousHash(prevHash)
+                .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
+                .build());
 
         subject.getBlocks().add(prevBlock);
 
@@ -618,9 +581,7 @@ public class BlockChainTest {
     public void should_increase_number_of_zeros() {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1)).when(block).getHash();
+        final Block block = spy(getBlock().build());
 
         // when
         final boolean actual = subject.putLast(block, 59);
@@ -632,6 +593,7 @@ public class BlockChainTest {
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(1);
         assertThat(subject.getNumberOfZeros()).isOne();
+        assertThat(block.getNProgress()).isOne();
     }
 
     @Test
@@ -639,10 +601,10 @@ public class BlockChainTest {
             throws NoSuchFieldException, IllegalAccessException {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(-1741077192).when(block).getMagicNumber();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + -1741077192)).when(block).getHash();
+        final Block block = spy(getBlock()
+                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L + -1741077192))
+                .withMagicNumber(-1741077192)
+                .build());
 
         final Field field = BlockChain.class.getDeclaredField("numberOfZeros");
         field.setAccessible(true);
@@ -658,6 +620,7 @@ public class BlockChainTest {
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(3);
         assertThat(subject.getNumberOfZeros()).isEqualTo(3);
+        assertThat(block.getNProgress()).isEqualTo(3);
     }
 
     @Test
@@ -665,10 +628,10 @@ public class BlockChainTest {
             throws NoSuchFieldException, IllegalAccessException {
 
         // given
-        final Block block = getMockedBlock();
-        doReturn("0").when(block).getPreviousHash();
-        doReturn(2114227617).when(block).getMagicNumber();
-        doReturn(Blocks.applySha256(1L + 1L + "0" + 1L + 2114227617)).when(block).getHash();
+        final Block block = spy(getBlock()
+                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L + 2114227617))
+                .withMagicNumber(2114227617)
+                .build());
 
         final Field field = BlockChain.class.getDeclaredField("numberOfZeros");
         field.setAccessible(true);
@@ -684,6 +647,7 @@ public class BlockChainTest {
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(0);
         assertThat(subject.getNumberOfZeros()).isZero();
+        assertThat(block.getNProgress()).isZero();
     }
 
     //########################################################//
@@ -715,6 +679,7 @@ public class BlockChainTest {
         // then
         assertThat(actual).isTrue();
         assertThat(subject.getMessages()).containsOnly(message);
+        verifyNoInteractions(message);
     }
 
     @ParameterizedTest
@@ -739,6 +704,8 @@ public class BlockChainTest {
         // then
         assertThat(actual).isFalse();
         assertThat(subject.getMessages()).containsOnly(prevMessage);
+        verify(prevMessage, times(1)).getId();
+        verify(message, times(1)).getId();
     }
 
     @Test
@@ -762,15 +729,8 @@ public class BlockChainTest {
         // then
         assertThat(actual).isTrue();
         assertThat(subject.getMessages()).containsExactly(prevMessage, message);
-    }
-
-    private Block getMockedBlock() {
-        final Block block = mock(Block.class);
-        doReturn(1L).when(block).getId();
-        doReturn(1L).when(block).getTimestamp();
-        doReturn(1L).when(block).getCreatedBy();
-        doReturn(-1).when(block).getMagicNumber();
-        return block;
+        verify(prevMessage, times(1)).getId();
+        verify(message, times(1)).getId();
     }
 
     private void verifyBlockWasValidated(final Block block, final int times) {
@@ -847,15 +807,15 @@ public class BlockChainTest {
         verify(lastBlock, times(times)).getMagicNumber();
     }
 
-    private BlockBuilder getValidBlockForTests() {
+    private BlockBuilder getBlock() {
         return BlockBuilder.builder()
                 .withId(1L)
                 .withTimestamp(1L)
-                .withMagicNumber(-1)
-                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L  + -1))
                 .withPreviousHash("0")
+                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L  + -1))
                 .withCreatedBy(1L)
-                .withGenerationTime(5L)
+                .withMagicNumber(-1)
+                .withGenerationTime(0L)
                 .withNProgress(0)
                 .withMessages(new ArrayList<>());
     }
