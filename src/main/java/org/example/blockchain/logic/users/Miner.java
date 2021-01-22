@@ -27,17 +27,18 @@ public class Miner extends AbstractUser {
     public void run() {
         while (active) {
             try {
+                Block block = null;
                 boolean isIn = false;
 
                 while (!isIn) {
                     final Block prevBlock = blockChain.getLast();
                     final List<Message> messages = new ArrayList<>(blockChain.getMessages());
-                    final Block block = Blocks
-                            .mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
+                    block = Blocks.mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
 
                     isIn = blockChain.putLast(block);
                 }
 
+                System.out.println(block);
                 addCoins(100);
                 sleep();
                 if (!active) break;

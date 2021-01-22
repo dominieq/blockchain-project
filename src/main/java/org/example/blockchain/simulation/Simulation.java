@@ -49,6 +49,11 @@ public class Simulation {
         }
     }
 
+    public synchronized void submitUser(final AbstractUser user) {
+        users.add(user);
+        userService.submit(user);
+    }
+
     public void shutdown() {
         users.forEach(AbstractUser::terminate);
     }
