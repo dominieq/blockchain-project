@@ -2,49 +2,55 @@ package org.example.blockchain;
 
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
-import org.example.blockchain.logic.users.builder.SenderBuilder;
+import org.example.blockchain.logic.users.builder.UserBuilder;
+import org.example.blockchain.simulation.Simulation;
+import org.example.blockchain.simulation.builder.SimulationBuilder;
 
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class Simulator {
 
-    private static final int POOL_SIZE = 15;
+    private static final int POOL_SIZE = 100;
+    private static final int INITIAL_MINERS_COUNT = 15;
+    private static final int INITIAL_USERS_COUNT = 30;
 
-    public static void main(String[] args) throws InterruptedException, NoSuchAlgorithmException {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
         keyGen.initialize(2048);
 
-        BlockChain blockChain = BlockChain.getInstance();
+        final Simulation simulation = SimulationBuilder.builder()
+                .withUsers(new ArrayList<>())
+                .withFixedThreadPool(POOL_SIZE)
+                .build();
+        final BlockChain blockChain = BlockChain.getInstance();
 
-        ExecutorService minerService = Executors.newFixedThreadPool(POOL_SIZE);
-        ExecutorService clientService = Executors.newFixedThreadPool(POOL_SIZE * 2);
+        final ExecutorService minerSupplier = Executors.newSingleThreadExecutor();
+        final ExecutorService userSupplier = Executors.newSingleThreadExecutor();
 
-        for (int i = 0; i < POOL_SIZE; i++) {
-            clientService.submit(SenderBuilder.builder()
-                    .withName("Client-" + i)
-                    .withKeyPair(keyGen.generateKeyPair())
-                    .withBlockChain(blockChain)
-                    .build()
-            );
+        minerSupplier.submit(() -> {
+            for (int i = 0; i < INITIAL_MINERS_COUNT; i++) {
+                simulation.submitUser(MinerBuilder.builder()
+                        .withName("Miner-" + i)
+                        .withKeyPair(keyGen.generateKeyPair())
+                        .withBlockChain(blockChain)
+                        .withSimulation(simulation)
+                        .build());
+            }
+        });
 
-            minerService.submit(MinerBuilder.builder()
-                    .withName("Miner-" + i)
-                    .withKeyPair(keyGen.generateKeyPair())
-                    .withBlockChain(blockChain)
-                    .build()
-            );
-        }
-
-        clientService.shutdown();
-        clientService.awaitTermination(14, TimeUnit.SECONDS);
-
-        minerService.shutdown();
-        minerService.awaitTermination(14, TimeUnit.SECONDS);
-
-        blockChain.getBlocks().stream().limit(15).forEach(System.out::println);
+        userSupplier.submit(() -> {
+            for (int i = 0; i < INITIAL_USERS_COUNT * 2; i++) {
+                simulation.submitUser(UserBuilder.builder()
+                        .withName("Client-" + i)
+                        .withKeyPair(keyGen.generateKeyPair())
+                        .withBlockChain(blockChain)
+                        .withSimulation(simulation)
+                        .build());
+            }
+        });
     }
 }

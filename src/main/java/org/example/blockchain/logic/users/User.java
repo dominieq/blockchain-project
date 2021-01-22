@@ -1,40 +1,73 @@
 package org.example.blockchain.logic.users;
 
 import org.example.blockchain.logic.BlockChain;
+import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
+import java.util.Random;
 
-public abstract class User implements Runnable {
+public class User extends AbstractUser {
 
-    protected final String name;
-    protected volatile long coins;
-    protected final KeyPair keyPair;
-    protected final BlockChain blockChain;
+    private volatile boolean active = true;
+    private volatile boolean terminated = false;
 
-    public User(final String name1,
-                final KeyPair keyPair1,
-                final BlockChain blockChain1) {
+    public User(final String name,
+                final KeyPair keyPair,
+                final BlockChain blockChain,
+                final Simulation simulation) {
 
-        this.name = name1;
-        this.coins = 100L;
-        this.keyPair = keyPair1;
-        this.blockChain = blockChain1;
+        super(name, keyPair, blockChain, simulation);
     }
 
     @Override
-    public String toString() {
+    public void run() {
+        while (active) {
+            try {
+                simulation.createAndPerformTransaction(this);
+                addCoins(new Random().nextInt(100) + 1);
+
+                sleep();
+                if (!active) break;
+            } catch (InterruptedException exception) {
+                active = false;
+            }
+        }
+
+        terminated = true;
+    }
+
+    @Override
+    public void terminate() {
+        active = false;
+    }
+
+    @Override
+    public String getName() {
         return name;
     }
 
-    abstract protected void sendTransaction();
+    @Override
+    public int getCoins() {
+        return coins;
+    }
 
-    abstract protected String getName();
+    @Override
+    public KeyPair getKeyPair() {
+        return keyPair;
+    }
 
-    abstract protected long getCoins();
+    @Override
+    public BlockChain getBlockChain() {
+        return blockChain;
+    }
 
-    abstract protected void setCoins(final long coins);
+    @Override
+    boolean isActive() {
+        return active;
+    }
 
-    abstract protected KeyPair getKeyPair();
-
-    abstract protected BlockChain getBlockChain();
+    @Override
+    boolean isTerminated() {
+        return terminated;
+    }
 }
