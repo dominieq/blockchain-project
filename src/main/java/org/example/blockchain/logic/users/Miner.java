@@ -35,7 +35,7 @@ public class Miner extends AbstractUser {
                     final List<Message> messages = new ArrayList<>(blockChain.getMessages());
                     block = Blocks.mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
 
-                    isIn = blockChain.putLast(block);
+                    isIn = blockChain.putLast(block, block.getGenerationTime());
                 }
 
                 System.out.println(block);
