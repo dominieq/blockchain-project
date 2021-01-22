@@ -31,7 +31,7 @@ public abstract class AbstractUser implements Runnable {
     }
 
     public Message prepareMessage() {
-        final String text = name + ": Hello there!";
+        final String text = "Hello there!";
         final int id = blockChain.getUniqueIdentifier();
         final byte[] signature = Messages.sign(text + id, keyPair.getPrivate());
 

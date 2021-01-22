@@ -106,7 +106,7 @@ public class AbstractUserTest {
         // then
         assertThat(actual).isInstanceOf(SecureMessage.class);
         assertThat(actual.getId()).isEqualTo(1);
-        assertThat(actual.getText()).isEqualTo(subject.getName() + ": Hello there!");
+        assertThat(actual.getText()).isEqualTo("Hello there!");
         assertThat(((SecureMessage) actual).getPublicKey()).isEqualTo(subject.getKeyPair().getPublic());
 
         final boolean actualVerify = Messages.verify(

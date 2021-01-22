@@ -42,7 +42,7 @@ public class Transaction extends MessageDecorator {
 
     @Override
     public String toString() {
-        return from + " " + message.getText() + " " + to;
+        return from + " says \"" + message.getText() + "\" to " + to + " and sends " + amount + " coins";
     }
 
     @Override

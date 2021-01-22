@@ -23,17 +23,11 @@ public class User extends AbstractUser {
     public void run() {
         while (active) {
             try {
-                boolean finished = false;
-
-                while (!finished) {
-                    finished = blockChain.addMessage(prepareMessage());
-                }
-
+                simulation.createAndPerformTransaction(this);
                 addCoins(new Random().nextInt(100) + 1);
+
                 sleep();
                 if (!active) break;
-
-                simulation.createAndPerformTransaction(this);
             } catch (InterruptedException exception) {
                 active = false;
             }
