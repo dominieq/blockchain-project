@@ -3,9 +3,9 @@ package org.example.blockchain.logic.message.builder;
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.Messages;
 import org.example.blockchain.logic.message.Transaction;
-import org.example.blockchain.logic.users.User;
+import org.example.blockchain.logic.users.AbstractUser;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
-import org.example.blockchain.logic.users.builder.SenderBuilder;
+import org.example.blockchain.logic.users.builder.UserBuilder;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,12 +48,12 @@ public class TransactionBuilderTest {
                 .withPublicKey(keyPair.getPublic())
                 .build();
 
-        final User sender = SenderBuilder.builder()
+        final AbstractUser sender = UserBuilder.builder()
                 .withName("TestSender")
                 .withKeyPair(keyPair)
                 .build();
 
-        final User receiver = MinerBuilder.builder()
+        final AbstractUser receiver = MinerBuilder.builder()
                 .withName("TestReceiver")
                 .withKeyPair(keyPair)
                 .build();

@@ -2,15 +2,13 @@ package org.example.blockchain.logic.message.builder;
 
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.Transaction;
-import org.example.blockchain.logic.users.User;
-
-import static java.util.Objects.isNull;
+import org.example.blockchain.logic.users.AbstractUser;
 
 public final class TransactionBuilder {
 
     private Message message;
-    private User from;
-    private User to;
+    private AbstractUser from;
+    private AbstractUser to;
     private long amount;
 
     private TransactionBuilder() { }
@@ -24,12 +22,12 @@ public final class TransactionBuilder {
         return this;
     }
 
-    public TransactionBuilder withFrom(final User from) {
+    public TransactionBuilder withFrom(final AbstractUser from) {
         this.from = from;
         return this;
     }
 
-    public TransactionBuilder withTo(final User to) {
+    public TransactionBuilder withTo(final AbstractUser to) {
         this.to = to;
         return this;
     }

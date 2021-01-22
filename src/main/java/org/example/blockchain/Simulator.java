@@ -2,7 +2,7 @@ package org.example.blockchain;
 
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
-import org.example.blockchain.logic.users.builder.SenderBuilder;
+import org.example.blockchain.logic.users.builder.UserBuilder;
 
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +24,7 @@ public class Simulator {
         ExecutorService clientService = Executors.newFixedThreadPool(POOL_SIZE * 2);
 
         for (int i = 0; i < POOL_SIZE; i++) {
-            clientService.submit(SenderBuilder.builder()
+            clientService.submit(UserBuilder.builder()
                     .withName("Client-" + i)
                     .withKeyPair(keyGen.generateKeyPair())
                     .withBlockChain(blockChain)

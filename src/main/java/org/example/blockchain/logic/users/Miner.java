@@ -3,62 +3,67 @@ package org.example.blockchain.logic.users;
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.block.*;
 import org.example.blockchain.logic.message.Message;
+import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Miner extends User {
+public class Miner extends AbstractUser {
+
+    private volatile boolean active = true;
+    private volatile boolean terminated = false;
 
     public Miner(final String name,
                  final KeyPair keyPair,
-                 final BlockChain blockChain) {
+                 final BlockChain blockChain,
+                 final Simulation simulation) {
 
-        super(name, keyPair, blockChain);
+        super(name, keyPair, blockChain, simulation);
     }
 
     @Override
     public void run() {
-        try {
-            boolean finished = false;
+        while (active) {
+            try {
+                boolean isIn = false;
 
-            while (!finished) {
-                final Block prevBlock = blockChain.getLast();
-                final List<Message> messages = new ArrayList<>(blockChain.getMessages());
-                final Block block = Blocks
-                        .mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
+                while (!isIn) {
+                    final Block prevBlock = blockChain.getLast();
+                    final List<Message> messages = new ArrayList<>(blockChain.getMessages());
+                    final Block block = Blocks
+                            .mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
 
-                finished = blockChain.putLast(block);
+                    isIn = blockChain.putLast(block);
+                }
+
+                addCoins(100);
+                sleep();
+                if (!active) break;
+
+                simulation.createAndPerformTransaction(this);
+            } catch (InterruptedException exception) {
+                active = false;
             }
-
-            coins = 100L;
-            while (coins > 0) {
-                sendTransaction();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
+
+        terminated = true;
     }
 
     @Override
-    protected synchronized void sendTransaction() {
-        coins--;
+    public void terminate() {
+        active = false;
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return name;
     }
 
     @Override
-    public long getCoins() {
+    public int getCoins() {
         return coins;
-    }
-
-    @Override
-    public void setCoins(final long coins) {
-        this.coins = coins;
     }
 
     @Override
@@ -67,7 +72,17 @@ public class Miner extends User {
     }
 
     @Override
-    protected KeyPair getKeyPair() {
+    public KeyPair getKeyPair() {
         return keyPair;
+    }
+
+    @Override
+    boolean isActive() {
+        return active;
+    }
+
+    @Override
+    boolean isTerminated() {
+        return terminated;
     }
 }

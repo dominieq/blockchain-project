@@ -1,18 +1,18 @@
 package org.example.blockchain.logic.message;
 
-import org.example.blockchain.logic.users.User;
+import org.example.blockchain.logic.users.AbstractUser;
 
 import static java.util.Objects.isNull;
 
 public class Transaction extends MessageDecorator {
 
-    private final User from;
-    private final User to;
+    private final AbstractUser from;
+    private final AbstractUser to;
     private final long amount;
 
     public Transaction(final Message message,
-                       final User from,
-                       final User to,
+                       final AbstractUser from,
+                       final AbstractUser to,
                        final long amount) {
 
         super(message);
@@ -65,11 +65,11 @@ public class Transaction extends MessageDecorator {
         this.message = message;
     }
 
-    public User getFrom() {
+    public AbstractUser getFrom() {
         return from;
     }
 
-    public User getTo() {
+    public AbstractUser getTo() {
         return to;
     }
 

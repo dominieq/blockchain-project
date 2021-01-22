@@ -1,45 +1,45 @@
 package org.example.blockchain.logic.users.builder;
 
 import org.example.blockchain.logic.BlockChain;
-import org.example.blockchain.logic.users.Miner;
+import org.example.blockchain.logic.users.User;
 import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
 
-public final class MinerBuilder {
+public final class UserBuilder {
 
     private String name;
     private KeyPair keyPair;
     private BlockChain blockChain;
     private Simulation simulation;
 
-    private MinerBuilder() { }
+    private UserBuilder() { }
 
-    public static MinerBuilder builder() {
-        return new MinerBuilder();
+    public static UserBuilder builder() {
+        return new UserBuilder();
     }
 
-    public MinerBuilder withName(final String name) {
+    public UserBuilder withName(final String name) {
         this.name = name;
         return this;
     }
 
-    public MinerBuilder withKeyPair(final KeyPair keyPair) {
+    public UserBuilder withKeyPair(final KeyPair keyPair) {
         this.keyPair = keyPair;
         return this;
     }
 
-    public MinerBuilder withBlockChain(final BlockChain blockChain) {
+    public UserBuilder withBlockChain(final BlockChain blockChain) {
         this.blockChain = blockChain;
         return this;
     }
 
-    public MinerBuilder withSimulation(final Simulation simulation) {
+    public UserBuilder withSimulation(final Simulation simulation) {
         this.simulation = simulation;
         return this;
     }
 
-    public Miner build() {
-        return new Miner(name, keyPair, blockChain, simulation);
+    public User build() {
+        return new User(name, keyPair, blockChain, simulation);
     }
 }
