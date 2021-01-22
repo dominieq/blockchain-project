@@ -60,11 +60,6 @@ public class Transaction extends MessageDecorator {
         return message;
     }
 
-    @Override
-    public void setMessage(final Message message) {
-        this.message = message;
-    }
-
     public AbstractUser getFrom() {
         return from;
     }
