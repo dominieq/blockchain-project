@@ -80,7 +80,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>org.example.blockchain.Simulator</mainClass>
+                            <mainClass>org.example.blockchain.SimulationStarter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
