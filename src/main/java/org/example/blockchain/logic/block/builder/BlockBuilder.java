@@ -5,6 +5,13 @@ import org.example.blockchain.logic.message.Message;
 
 import java.util.List;
 
+/**
+ * A builder for the {@link Block} class.
+ *
+ * @author Dominik Szmyt
+ * @see Block
+ * @since 1.0.0
+ */
 public final class BlockBuilder {
 
     private long id;

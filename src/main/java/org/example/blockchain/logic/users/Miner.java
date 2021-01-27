@@ -10,6 +10,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Represents a user who is going to mine blocks apart from performing transactions.
+ * After each added block a miner earns 100 coins.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public class Miner extends AbstractUser {
 
     private volatile boolean active = true;
@@ -52,6 +59,9 @@ public class Miner extends AbstractUser {
         terminated = true;
     }
 
+    /**
+     * Stops miner thread's <tt>while</tt> loop.
+     */
     @Override
     public void terminate() {
         active = false;

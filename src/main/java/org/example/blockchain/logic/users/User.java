@@ -6,6 +6,13 @@ import org.example.blockchain.simulation.Simulation;
 import java.security.KeyPair;
 import java.util.Random;
 
+/**
+ * Represents a simple blockchain user who is only going to perform transactions.
+ * After each performed transaction a user earns random amount of coins what simulates using real life savings.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public class User extends AbstractUser {
 
     private volatile boolean active = true;
@@ -36,6 +43,9 @@ public class User extends AbstractUser {
         terminated = true;
     }
 
+    /**
+     * Stops user thread's <tt>while</tt> loop.
+     */
     @Override
     public void terminate() {
         active = false;

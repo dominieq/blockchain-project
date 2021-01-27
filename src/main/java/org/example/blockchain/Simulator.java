@@ -12,6 +12,13 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * Starts simulation with 15 miners and 30 simple users.
+ * Miners and users are submitted concurrently by two threads.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public class Simulator {
 
     private static final int POOL_SIZE = 100;

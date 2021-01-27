@@ -11,6 +11,13 @@ import java.util.concurrent.ExecutorService;
 
 import static java.util.Objects.isNull;
 
+/**
+ * Represents a real world where miners and users can utilize a blockchain
+ * by mining new blocks and performing transactions.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public class Simulation {
 
     private final List<AbstractUser> users;
@@ -23,6 +30,15 @@ public class Simulation {
         this.userService = userService;
     }
 
+    /**
+     * At first, selects another random user that is going to be a recipient in a new transaction.
+     * Then, chooses a random number of coins that is to be transferred from the sender to the recipient.
+     * In the end, tries to add a transaction to a blockchain.
+     * If the addition was successful, the transaction is deemed completed
+     * and coins are transferred from one user to another.
+     *
+     * @param user - A user that wants to perform a transaction.
+     */
     public synchronized void createAndPerformTransaction(final AbstractUser user) {
         if (isNull(user)) return;
 
@@ -49,15 +65,25 @@ public class Simulation {
         }
     }
 
+    /**
+     * Adds user to the list of all users and then starts user's thread.
+     * @param user - A user that is to be submitted to the <tt>Simulation</tt>
+     */
     public synchronized void submitUser(final AbstractUser user) {
         users.add(user);
         userService.submit(user);
     }
 
+    /**
+     * Gracefully stops each user.
+     */
     public void shutdown() {
         users.forEach(AbstractUser::terminate);
     }
 
+    /**
+     * Shutdowns each user's thread.
+     */
     public void shutdownNow() {
         userService.shutdownNow();
     }

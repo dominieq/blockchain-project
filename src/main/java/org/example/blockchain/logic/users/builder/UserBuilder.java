@@ -6,6 +6,13 @@ import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
 
+/**
+ * A builder for the {@link User} class.
+ *
+ * @author Dominik Szmyt
+ * @see User
+ * @since 1.0.0
+ */
 public final class UserBuilder {
 
     private String name;

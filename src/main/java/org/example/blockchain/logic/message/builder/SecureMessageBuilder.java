@@ -6,6 +6,13 @@ import java.security.PublicKey;
 
 import static java.util.Objects.isNull;
 
+/**
+ * A builder for the {@link SecureMessage} class
+ *
+ * @author Dominik Szmyt
+ * @see SecureMessage
+ * @since 1.0.0
+ */
 public final class SecureMessageBuilder {
 
     private String text;

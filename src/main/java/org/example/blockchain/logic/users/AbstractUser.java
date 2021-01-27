@@ -10,6 +10,12 @@ import java.security.KeyPair;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Represents a real life blockchain user who can perform transactions that may be included in one of the blocks.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public abstract class AbstractUser implements Runnable {
 
     protected final String name;
@@ -30,6 +36,11 @@ public abstract class AbstractUser implements Runnable {
         simulation = simulation1;
     }
 
+    /**
+     * Prepares and signs a <tt>SecureMessage</tt> using user's private key.
+     * @return A secure message that may be included in a transaction.
+     * @see org.example.blockchain.logic.message.SecureMessage
+     */
     public Message prepareMessage() {
         final String text = "Hello there!";
         final int id = blockChain.getUniqueIdentifier();
@@ -43,20 +54,35 @@ public abstract class AbstractUser implements Runnable {
                 .build();
     }
 
+    /**
+     * Increases number of coins by a given value.
+     * @param addend - A value that is to be added to the {@link #coins}.
+     */
     public synchronized void addCoins(final int addend) {
         if (addend < 0) return;
         coins += addend;
     }
 
+    /**
+     * Decreases number of coins by a given value.
+     * @param subtrahend - A value that is to be subtracted from the {@link #coins}.
+     */
     public synchronized void takeCoins(final int subtrahend) {
         if (subtrahend < 0) return;
         coins -= subtrahend;
     }
 
+    /**
+     * Sleeps for the random amount of time.
+     * @throws InterruptedException - When any thread interrupted current thread while current thread was sleeping.
+     */
     protected void sleep() throws InterruptedException {
         TimeUnit.SECONDS.sleep(new Random().nextInt(15) + 1);
     }
 
+    /**
+     * Each <tt>AbstractUser</tt> implementation should provide a method to stop it's thread's <tt>while</tt> loop.
+     */
     abstract public void terminate();
 
     @Override

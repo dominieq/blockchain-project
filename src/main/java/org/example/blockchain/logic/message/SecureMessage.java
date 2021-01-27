@@ -2,6 +2,13 @@ package org.example.blockchain.logic.message;
 
 import java.security.*;
 
+/**
+ * A <tt>Message</tt> that had it's content signed with a private key
+ * and is shipped with a public key to verify the validity of the signature.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public class SecureMessage implements Message {
 
     private final String text;

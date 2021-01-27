@@ -4,6 +4,13 @@ import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.Transaction;
 import org.example.blockchain.logic.users.AbstractUser;
 
+/**
+ * A builder for the {@link Transaction} class.
+ *
+ * @author Dominik Szmyt
+ * @see Transaction
+ * @since 1.0.0
+ */
 public final class TransactionBuilder {
 
     private Message message;
