@@ -60,7 +60,7 @@ public class Miner extends AbstractUser {
     }
 
     /**
-     * Stops miner thread's <tt>while</tt> loop.
+     * Stops miner thread's {@code while} loop.
      */
     @Override
     public void terminate() {

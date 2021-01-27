@@ -5,7 +5,7 @@ import org.example.blockchain.logic.users.AbstractUser;
 import static java.util.Objects.isNull;
 
 /**
- * A <tt>Message</tt> that specifies a sender and recipient
+ * A {@code Message} that specifies a sender and recipient
  * as well as the number of coins that is to be transferred from the sender to the recipient.
  *
  * @author Dominik Szmyt

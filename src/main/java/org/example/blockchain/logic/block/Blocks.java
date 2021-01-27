@@ -22,7 +22,7 @@ public final class Blocks {
     /**
      * Generates a hash by applying SHA256 to the input text.
      *
-     * @param input - An input text that is to be used to generate a hash.
+     * @param input An input text that is to be used to generate a hash.
      * @return A hash that was created by applying SHA256 to the input text.
      */
     public static String applySha256(final String input) {
@@ -48,8 +48,8 @@ public final class Blocks {
      * Looks for a magic number by randomly selecting a value
      * and verifying if a generated hash has the required number of zeros.
      *
-     * @param numberOfZeros - A required number of zeros at the beginning of a generated hash.
-     * @param input - An input that is to be used to generate hash.
+     * @param numberOfZeros A required number of zeros at the beginning of a generated hash.
+     * @param input An input that is to be used to generate hash.
      * @return A magic number.
      */
     public static int findMagicNumber(final int numberOfZeros, final String input) {
@@ -70,10 +70,10 @@ public final class Blocks {
     /**
      * Carries out a process of mining a valid block.
      *
-     * @param prevBlock - A previous block that will be used as a reference point when mining a new block.
-     * @param messages - The list of messages that will be included in a new block.
-     * @param timestamp - The timestamp at which a creator started mining the block.
-     * @param createdBy - The unique identifier of a creator.
+     * @param prevBlock A previous block that will be used as a reference point when mining a new block.
+     * @param messages The list of messages that will be included in a new block.
+     * @param timestamp The timestamp at which a creator started mining the block.
+     * @param createdBy The unique identifier of a creator.
      * @return A valid block that can be added to a blockchain.
      */
     public static Block mineBlock(final Block prevBlock,
