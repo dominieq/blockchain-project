@@ -4,7 +4,7 @@ import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.Messages;
 import org.example.blockchain.logic.message.SecureMessage;
-import org.example.blockchain.logic.users.builder.UserBuilder;
+import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
 import org.example.blockchain.simulation.Simulation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ public class AbstractUserTest {
 
     @BeforeEach
     public void setUp() {
-        subject = UserBuilder.builder()
+        subject = SimpleUserBuilder.builder()
                 .withName("dominieq")
                 .withKeyPair(generator.generateKeyPair())
                 .withBlockChain(blockChain)

@@ -13,15 +13,15 @@ import java.util.Random;
  * @author Dominik Szmyt
  * @since 1.0.0
  */
-public class User extends AbstractUser {
+public class SimpleUser extends AbstractUser {
 
     private volatile boolean active = true;
     private volatile boolean terminated = false;
 
-    public User(final String name,
-                final KeyPair keyPair,
-                final BlockChain blockChain,
-                final Simulation simulation) {
+    public SimpleUser(final String name,
+                      final KeyPair keyPair,
+                      final BlockChain blockChain,
+                      final Simulation simulation) {
 
         super(name, keyPair, blockChain, simulation);
     }

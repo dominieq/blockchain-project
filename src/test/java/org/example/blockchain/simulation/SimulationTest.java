@@ -5,7 +5,7 @@ import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.SecureMessage;
 import org.example.blockchain.logic.message.Transaction;
 import org.example.blockchain.logic.users.AbstractUser;
-import org.example.blockchain.logic.users.builder.UserBuilder;
+import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
 import org.example.blockchain.simulation.builder.SimulationBuilder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ public class SimulationTest {
         // given
         final AbstractUser chosenUser = mock(AbstractUser.class);
 
-        final AbstractUser user = spy(UserBuilder.builder()
+        final AbstractUser user = spy(SimpleUserBuilder.builder()
                 .withName("dominieq")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(mock(BlockChain.class))
@@ -91,14 +91,14 @@ public class SimulationTest {
         final BlockChain blockChain = mock(BlockChain.class);
         doReturn(true).when(blockChain).addMessage(any(Message.class));
 
-        final AbstractUser chosenUser = spy(UserBuilder.builder()
+        final AbstractUser chosenUser = spy(SimpleUserBuilder.builder()
                 .withName("vulwsztyn")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockChain)
                 .withSimulation(subject)
                 .build());
 
-        final AbstractUser user = spy(UserBuilder.builder()
+        final AbstractUser user = spy(SimpleUserBuilder.builder()
                 .withName("dominieq")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockChain)

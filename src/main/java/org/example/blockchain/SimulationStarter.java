@@ -2,7 +2,7 @@ package org.example.blockchain;
 
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
-import org.example.blockchain.logic.users.builder.UserBuilder;
+import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
 import org.example.blockchain.simulation.Simulation;
 import org.example.blockchain.simulation.builder.SimulationBuilder;
 
@@ -19,7 +19,7 @@ import java.util.concurrent.Executors;
  * @author Dominik Szmyt
  * @since 1.0.0
  */
-public class Simulator {
+public class SimulationStarter {
 
     private static final int POOL_SIZE = 100;
     private static final int INITIAL_MINERS_COUNT = 15;
@@ -51,7 +51,7 @@ public class Simulator {
 
         userSupplier.submit(() -> {
             for (int i = 0; i < INITIAL_USERS_COUNT * 2; i++) {
-                simulation.submitUser(UserBuilder.builder()
+                simulation.submitUser(SimpleUserBuilder.builder()
                         .withName("Client-" + i)
                         .withKeyPair(keyGen.generateKeyPair())
                         .withBlockChain(blockChain)

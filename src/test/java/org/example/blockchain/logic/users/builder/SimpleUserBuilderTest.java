@@ -1,7 +1,7 @@
 package org.example.blockchain.logic.users.builder;
 
 import org.example.blockchain.logic.BlockChain;
-import org.example.blockchain.logic.users.User;
+import org.example.blockchain.logic.users.SimpleUser;
 import org.example.blockchain.simulation.Simulation;
 import org.example.blockchain.simulation.builder.SimulationBuilder;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,10 +14,10 @@ import java.security.NoSuchAlgorithmException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class UserBuilderTest {
+public class SimpleUserBuilderTest {
 
     private static KeyPairGenerator generator;
-    private UserBuilder subject;
+    private SimpleUserBuilder subject;
 
     @BeforeAll
     public static void initialize() throws NoSuchAlgorithmException {
@@ -27,7 +27,7 @@ public class UserBuilderTest {
 
     @BeforeEach
     public void setUp() {
-        subject = UserBuilder.builder();
+        subject = SimpleUserBuilder.builder();
     }
 
     @Test
@@ -40,7 +40,7 @@ public class UserBuilderTest {
         final Simulation simulation = SimulationBuilder.builder().build();
 
         // when
-        final User actual = subject
+        final SimpleUser actual = subject
                 .withName(name)
                 .withKeyPair(keyPair)
                 .withBlockChain(blockChain)
