@@ -23,6 +23,11 @@ public class Simulation {
     private final List<AbstractUser> users;
     private final ExecutorService userService;
 
+    /**
+     * Create a {@code Simulation} with all needed fields.
+     * @param users A list of users that will participate in a simulation.
+     * @param userService A service that will manage threads.
+     */
     public Simulation(final List<AbstractUser> users,
                       final ExecutorService userService) {
 

@@ -16,6 +16,14 @@ public class SecureMessage implements Message {
     private final byte[] signature;
     private final PublicKey publicKey;
 
+    /**
+     * Create a {@code SecureMessage} with all necessary fields.
+     * @param text The text of a {@code SecureMessage}.
+     * @param id The id of a {@code SecureMessage}.
+     * @param signature The signature of a {@code SecureMessage}.
+     * @param publicKey The public key that is to be used for verification.
+     * @throws IllegalArgumentException When the signature verification with public key didn't succeed.
+     */
     public SecureMessage(final String text,
                          final int id,
                          final byte[] signature,

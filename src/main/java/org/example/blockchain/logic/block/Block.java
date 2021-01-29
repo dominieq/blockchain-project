@@ -33,6 +33,18 @@ public class Block implements Serializable {
     private int nProgress;
     private final List<Message> messages;
 
+    /**
+     * Create a {@link Block} with all necessary fields.
+     * @param id The id of a {@code Block}.
+     * @param timestamp The timestamp of a {@code Block}.
+     * @param magicNumber The magic number of a {@code Block}.
+     * @param hash The hash of a {@code Block}.
+     * @param previousHash The hash of a previous {@code Block}.
+     * @param createdBy The identifier of a creator
+     * @param generationTime The amount of time it took to generate a {@code Block}.
+     * @param nProgress The number of zeros that will be required for the next {@code Block}.
+     * @param messages A list message included in a {@code Block}
+     */
     public Block(final long id,
                  final long timestamp,
                  final int magicNumber,

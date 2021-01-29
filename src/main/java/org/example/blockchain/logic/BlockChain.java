@@ -29,6 +29,9 @@ public class BlockChain implements Serializable {
     private static final Object IDENTIFIER_LOCK = new Object();
     private static final Object MESSAGES_LOCK = new Object();
 
+    /**
+     * Create a {@code BlockChain} with default values.
+     */
     private BlockChain() {
         numberOfZeros = 0;
         messages = new ArrayList<>();
@@ -36,6 +39,11 @@ public class BlockChain implements Serializable {
         identifierStream = new IdentifierStream();
     }
 
+    /**
+     * If an instance didn't exist, creates a new {@code BlockChain}.
+     * Otherwise, return an existing instance of the {@code BlockChain}.
+     * @return If an instance didn't exist returns a new {@code BlockChain}.
+     */
     public static BlockChain getInstance() {
         if (instance == null) {
             instance = new BlockChain();

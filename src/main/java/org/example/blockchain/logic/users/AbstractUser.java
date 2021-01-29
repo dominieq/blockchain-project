@@ -24,6 +24,13 @@ public abstract class AbstractUser implements Runnable {
     protected final BlockChain blockChain;
     protected final Simulation simulation;
 
+    /**
+     * Create an {@code AbstractUser} with all necessary fields.
+     * @param name1 The name of an {@code AbstractUser}.
+     * @param keyPair1 The key pair used to sign {@code SecureMessages}.
+     * @param blockChain1 An instance of the {@link BlockChain}.
+     * @param simulation1 An instance of the {@link Simulation}.
+     */
     public AbstractUser(final String name1,
                         final KeyPair keyPair1,
                         final BlockChain blockChain1,

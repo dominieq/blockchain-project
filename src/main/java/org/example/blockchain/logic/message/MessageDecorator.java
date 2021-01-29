@@ -11,6 +11,10 @@ public abstract class MessageDecorator implements Message {
 
     protected final Message message;
 
+    /**
+     * Create a {@code MessageDecorator} with a {@link Message}.
+     * @param message1 A message that is to be stored by a {@code MessageDecorator}.
+     */
     public MessageDecorator(final Message message1) {
         message = message1;
     }

@@ -18,6 +18,13 @@ public class SimpleUser extends AbstractUser {
     private volatile boolean active = true;
     private volatile boolean terminated = false;
 
+    /**
+     * Create a {@code SimpleUser} with all necessary fields.
+     * @param name The name of a {@code SimpleUser}.
+     * @param keyPair The key pair used to sign {@code SecureMessages}.
+     * @param blockChain An instance of the {@link BlockChain}.
+     * @param simulation An instance of the {@link Simulation}.
+     */
     public SimpleUser(final String name,
                       final KeyPair keyPair,
                       final BlockChain blockChain,
