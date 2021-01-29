@@ -24,6 +24,13 @@ public abstract class AbstractUser implements Runnable {
     protected final BlockChain blockChain;
     protected final Simulation simulation;
 
+    /**
+     * Create an {@code AbstractUser} with all necessary fields.
+     * @param name1 The name of an {@code AbstractUser}.
+     * @param keyPair1 The key pair used to sign {@code SecureMessages}.
+     * @param blockChain1 An instance of the {@link BlockChain}.
+     * @param simulation1 An instance of the {@link Simulation}.
+     */
     public AbstractUser(final String name1,
                         final KeyPair keyPair1,
                         final BlockChain blockChain1,
@@ -37,7 +44,7 @@ public abstract class AbstractUser implements Runnable {
     }
 
     /**
-     * Prepares and signs a <tt>SecureMessage</tt> using user's private key.
+     * Prepares and signs a {@code SecureMessage} using user's private key.
      * @return A secure message that may be included in a transaction.
      * @see org.example.blockchain.logic.message.SecureMessage
      */
@@ -56,7 +63,7 @@ public abstract class AbstractUser implements Runnable {
 
     /**
      * Increases number of coins by a given value.
-     * @param addend - A value that is to be added to the {@link #coins}.
+     * @param addend A value that is to be added to the {@link #coins}.
      */
     public synchronized void addCoins(final int addend) {
         if (addend < 0) return;
@@ -65,7 +72,7 @@ public abstract class AbstractUser implements Runnable {
 
     /**
      * Decreases number of coins by a given value.
-     * @param subtrahend - A value that is to be subtracted from the {@link #coins}.
+     * @param subtrahend A value that is to be subtracted from the {@link #coins}.
      */
     public synchronized void takeCoins(final int subtrahend) {
         if (subtrahend < 0) return;
@@ -74,14 +81,14 @@ public abstract class AbstractUser implements Runnable {
 
     /**
      * Sleeps for the random amount of time.
-     * @throws InterruptedException - When any thread interrupted current thread while current thread was sleeping.
+     * @throws InterruptedException When any thread interrupted current thread while current thread was sleeping.
      */
     protected void sleep() throws InterruptedException {
         TimeUnit.SECONDS.sleep(new Random().nextInt(15) + 1);
     }
 
     /**
-     * Each <tt>AbstractUser</tt> implementation should provide a method to stop it's thread's <tt>while</tt> loop.
+     * Each {@code AbstractUser} implementation should provide a method to stop it's thread's {@code while} loop.
      */
     abstract public void terminate();
 

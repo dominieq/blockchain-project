@@ -23,6 +23,11 @@ public class Simulation {
     private final List<AbstractUser> users;
     private final ExecutorService userService;
 
+    /**
+     * Create a {@code Simulation} with all needed fields.
+     * @param users A list of users that will participate in a simulation.
+     * @param userService A service that will manage threads.
+     */
     public Simulation(final List<AbstractUser> users,
                       final ExecutorService userService) {
 
@@ -37,7 +42,7 @@ public class Simulation {
      * If the addition was successful, the transaction is deemed completed
      * and coins are transferred from one user to another.
      *
-     * @param user - A user that wants to perform a transaction.
+     * @param user A user that wants to perform a transaction.
      */
     public synchronized void createAndPerformTransaction(final AbstractUser user) {
         if (isNull(user)) return;
@@ -67,7 +72,7 @@ public class Simulation {
 
     /**
      * Adds user to the list of all users and then starts user's thread.
-     * @param user - A user that is to be submitted to the <tt>Simulation</tt>
+     * @param user A user that is to be submitted to the {@code Simulation}.
      */
     public synchronized void submitUser(final AbstractUser user) {
         users.add(user);

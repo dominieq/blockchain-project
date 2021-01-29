@@ -38,6 +38,34 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <profile>
+            <id>generate-javadoc</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>generate-javadoc</id>
+                                <goals>
+                                    <goal>javadoc</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <encoding>UTF-8</encoding>
+                                    <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>

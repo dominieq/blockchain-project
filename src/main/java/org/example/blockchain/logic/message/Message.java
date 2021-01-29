@@ -9,13 +9,13 @@ package org.example.blockchain.logic.message;
 public interface Message {
 
     /**
-     * Each <tt>Message</tt> implementation should have a text.
+     * Each {@code Message} implementation should have a text.
      * @return A message's text.
      */
     String getText();
 
     /**
-     * Each <tt>Message</tt> implementation should have a unique identifier.
+     * Each {@code Message} implementation should have a unique identifier.
      * @return A message's unique identifier.
      */
     int getId();

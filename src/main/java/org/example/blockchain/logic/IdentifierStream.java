@@ -14,6 +14,9 @@ public class IdentifierStream {
 
     private int startingPoint;
 
+    /**
+     * Create an {@code IdentifierStream} with starting point at 0.
+     */
     public IdentifierStream() {
         startingPoint = 0;
     }

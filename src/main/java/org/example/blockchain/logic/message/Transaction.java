@@ -5,7 +5,7 @@ import org.example.blockchain.logic.users.AbstractUser;
 import static java.util.Objects.isNull;
 
 /**
- * A <tt>Message</tt> that specifies a sender and recipient
+ * A {@code Message} that specifies a sender and recipient
  * as well as the number of coins that is to be transferred from the sender to the recipient.
  *
  * @author Dominik Szmyt
@@ -17,6 +17,14 @@ public class Transaction extends MessageDecorator {
     private final AbstractUser to;
     private final long amount;
 
+    /**
+     * Create a {@code Transaction} with all necessary fields.
+     * @param message A message included in a {@code Transaction}.
+     * @param from The sender of a {@code Transaction}.
+     * @param to The recipient of a {@code Transaction}.
+     * @param amount The number of coins transferred in a transaction.
+     * @throws IllegalArgumentException When the from and to arguments are not defined - {@code null}.
+     */
     public Transaction(final Message message,
                        final AbstractUser from,
                        final AbstractUser to,

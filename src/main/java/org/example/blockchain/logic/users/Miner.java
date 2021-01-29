@@ -22,6 +22,13 @@ public class Miner extends AbstractUser {
     private volatile boolean active = true;
     private volatile boolean terminated = false;
 
+    /**
+     * Create a {@code Miner} with all necessary fields.
+     * @param name The name of a {@code Miner}.
+     * @param keyPair The key pair used to sign {@code SecureMessages}.
+     * @param blockChain An instance of the {@link BlockChain}.
+     * @param simulation An instance of the {@link Simulation}.
+     */
     public Miner(final String name,
                  final KeyPair keyPair,
                  final BlockChain blockChain,
@@ -60,7 +67,7 @@ public class Miner extends AbstractUser {
     }
 
     /**
-     * Stops miner thread's <tt>while</tt> loop.
+     * Stops miner thread's {@code while} loop.
      */
     @Override
     public void terminate() {
