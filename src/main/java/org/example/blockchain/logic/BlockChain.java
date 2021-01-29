@@ -55,8 +55,12 @@ public class BlockChain implements Serializable {
         final boolean isIn = putLast(block);
 
         if (isIn) {
-            if (generationTime < 60L) {
-                block.setNProgress(++numberOfZeros);
+            if (generationTime < 30L) {
+                if (numberOfZeros < 6) {
+                    block.setNProgress(++numberOfZeros);
+                } else {
+                    block.setNProgress(numberOfZeros);
+                }
             } else if (numberOfZeros > 0) {
                 block.setNProgress(--numberOfZeros);
             }

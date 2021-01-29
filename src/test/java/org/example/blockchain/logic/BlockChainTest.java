@@ -584,7 +584,7 @@ public class BlockChainTest {
         final Block block = spy(getBlock().build());
 
         // when
-        final boolean actual = subject.putLast(block, 59);
+        final boolean actual = subject.putLast(block, 29);
 
         // then
         assertThat(actual).isTrue();
@@ -594,6 +594,33 @@ public class BlockChainTest {
         verify(block, times(1)).setNProgress(1);
         assertThat(subject.getNumberOfZeros()).isOne();
         assertThat(block.getNProgress()).isOne();
+    }
+
+    @Test
+    public void should_not_increase_nor_decrease_number_of_zeros()
+            throws NoSuchFieldException, IllegalAccessException {
+
+        // given
+        final Block block = spy(getBlock()
+                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L + 876285186))
+                .withMagicNumber(876285186)
+                .build());
+
+        final Field field = BlockChain.class.getDeclaredField("numberOfZeros");
+        field.setAccessible(true);
+        field.set(subject, 6);
+
+        // when
+        final boolean actual = subject.putLast(block, 29);
+
+        // then
+        assertThat(actual).isTrue();
+        assertThat(subject.getBlocks()).contains(block);
+        verifyAttemptToAddBlockToEmptyList(block, 1);
+        verify(block, times(1)).getMessages();
+        verify(block, times(1)).setNProgress(6);
+        assertThat(subject.getNumberOfZeros()).isEqualTo(6);
+        assertThat(block.getNProgress()).isEqualTo(6);
     }
 
     @Test
@@ -611,7 +638,7 @@ public class BlockChainTest {
         field.set(subject, 1);
 
         // when
-        final boolean actual = subject.putLast(block, 60);
+        final boolean actual = subject.putLast(block, 30);
 
         // then
         assertThat(actual).isTrue();
