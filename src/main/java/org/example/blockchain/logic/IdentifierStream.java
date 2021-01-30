@@ -2,24 +2,41 @@ package org.example.blockchain.logic;
 
 import java.util.Random;
 
+/**
+ * Supplies blockchain with unique identifiers for it's messages.
+ * When a user wishes to add a message to a blockchain they need to ask for a unique identifier first.
+ * This identifier is then used for validating messages.
+ *
+ * @author Dominik Szmyt
+ * @since 1.0.0
+ */
 public class IdentifierStream {
 
     private int startingPoint;
 
+    /**
+     * Create an {@code IdentifierStream} with starting point at 0.
+     */
     public IdentifierStream() {
-        this.startingPoint = 0;
+        startingPoint = 0;
     }
 
+    /**
+     * Draws a random stream of ints and then finds one value from the first one hundred results
+     * that is greater than the starting point. If there are not such results, increments starting point by 1.
+     *
+     * @return A unique identifier
+     */
     public int getNext() {
-        Random random = new Random();
+        final Random random = new Random();
 
-        int next = random.ints()
+        final int next = random.ints()
                 .limit(100)
-                .filter(x -> x > this.startingPoint)
+                .filter(x -> x > startingPoint)
                 .findAny()
-                .orElse(this.startingPoint + 1);
+                .orElse(startingPoint + 1);
 
-        this.startingPoint = next;
+        startingPoint = next;
         return next;
     }
 }
