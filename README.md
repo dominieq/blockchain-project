@@ -22,3 +22,7 @@ mvn clean package
 ## License
 This project is licensed under the Apache License, Version 2.0 -
 see the [LICENSE](https://github.com/dominieq/blockchain-project/blob/master/LICENSE) file for details.
+
+## Acknowledgements
+The idea for this project as well as an excellent study plan 
+was conceived by the [JetBrainsAcademy](https://www.jetbrains.com/academy/).
