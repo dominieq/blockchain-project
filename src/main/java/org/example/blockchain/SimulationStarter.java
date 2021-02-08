@@ -11,6 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Starts simulation with 15 miners and 30 simple users.
@@ -59,5 +60,18 @@ public class SimulationStarter {
                         .build());
             }
         });
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            simulation.shutdown();
+            boolean isTerminated = false;
+
+            try {
+                isTerminated = simulation.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException ignored) {
+
+            } finally {
+                if (!isTerminated) simulation.shutdownNow();
+            }
+        }));
     }
 }

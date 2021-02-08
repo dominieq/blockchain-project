@@ -36,26 +36,23 @@ public class SimpleUser extends AbstractUser {
     @Override
     public void run() {
         while (active) {
-            try {
-                simulation.createAndPerformTransaction(this);
-                addCoins(new Random().nextInt(100) + 1);
+            simulation.createAndPerformTransaction(this);
+            addCoins(new Random().nextInt(100) + 1);
 
-                sleep();
-                if (!active) break;
-            } catch (InterruptedException exception) {
-                active = false;
-            }
+            sleep();
+            if (!active) break;
         }
 
         terminated = true;
     }
 
     /**
-     * Stops user thread's {@code while} loop.
+     * Stops a simple user's thread by  exiting its {@code while} loop and stopping any other thread.
      */
     @Override
     public void terminate() {
         active = false;
+        sleepExecutor.shutdownNow();
     }
 
     @Override
@@ -79,12 +76,12 @@ public class SimpleUser extends AbstractUser {
     }
 
     @Override
-    boolean isActive() {
+    public boolean isActive() {
         return active;
     }
 
     @Override
-    boolean isTerminated() {
+    public boolean isTerminated() {
         return terminated;
     }
 }

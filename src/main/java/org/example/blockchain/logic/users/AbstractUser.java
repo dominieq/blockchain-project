@@ -8,6 +8,8 @@ import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,6 +25,7 @@ public abstract class AbstractUser implements Runnable {
     protected final KeyPair keyPair;
     protected final BlockChain blockChain;
     protected final Simulation simulation;
+    protected ExecutorService sleepExecutor;
 
     /**
      * Create an {@code AbstractUser} with all necessary fields.
@@ -80,11 +83,38 @@ public abstract class AbstractUser implements Runnable {
     }
 
     /**
-     * Sleeps for the random amount of time.
-     * @throws InterruptedException When any thread interrupted current thread while current thread was sleeping.
+     * Submits a new thread that sleeps for random amount of time between 1 and 15 seconds.
+     * Immediately, shuts down the executor to await its termination.
+     * @since 1.1.0
      */
-    protected void sleep() throws InterruptedException {
-        TimeUnit.SECONDS.sleep(new Random().nextInt(15) + 1);
+    private void executeSleep() {
+        sleepExecutor = Executors.newSingleThreadExecutor();
+
+        sleepExecutor.submit(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(new Random().nextInt(15) + 1);
+            } catch (InterruptedException ignored) {
+                // TODO log exception
+            }
+        });
+
+        sleepExecutor.shutdown();
+    }
+
+    /**
+     * Awaits the termination of a sleep execution called within {@link #executeSleep()} method.
+     */
+    protected void sleep() {
+        executeSleep();
+        boolean isTerminated = false;
+
+        try {
+            isTerminated = sleepExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException ignored) {
+            // TODO log exception
+        } finally {
+            if (!isTerminated) sleepExecutor.shutdownNow();
+        }
     }
 
     /**
@@ -105,7 +135,7 @@ public abstract class AbstractUser implements Runnable {
 
     abstract public BlockChain getBlockChain();
 
-    abstract boolean isActive();
+    abstract public boolean isActive();
 
-    abstract boolean isTerminated();
+    abstract public boolean isTerminated();
 }

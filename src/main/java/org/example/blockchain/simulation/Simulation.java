@@ -7,7 +7,10 @@ import org.example.blockchain.logic.users.AbstractUser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Objects.isNull;
 
@@ -22,6 +25,7 @@ public class Simulation {
 
     private final List<AbstractUser> users;
     private final ExecutorService userService;
+    private CountDownLatch countDownLatch;
 
     /**
      * Create a {@code Simulation} with all needed fields.
@@ -82,12 +86,40 @@ public class Simulation {
     /**
      * Gracefully stops each user.
      */
-    public void shutdown() {
-        users.forEach(AbstractUser::terminate);
+    public synchronized void shutdown() {
+        final ExecutorService service = Executors.newFixedThreadPool(users.size());
+        countDownLatch = new CountDownLatch(users.size());
+
+        users.forEach(user -> service.submit(() -> {
+            user.terminate();
+
+            try {
+                while(!user.isTerminated()) TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ignored) {
+                // TODO log exception
+            } finally {
+                countDownLatch.countDown();
+            }
+        }));
     }
 
     /**
-     * Shutdowns each user's thread.
+     * Should be fired after {@link #shutdown()} method was used. Awaits the termination of all users.
+     *
+     * @param timeout The maximum time to wait.
+     * @param timeUnit The time unit of the {@code timeout} argument.
+     * @return {@code true} if all users were terminated and {@code false} if the waiting time elapsed before that happened.
+     * @throws InterruptedException if the current thread is interrupted while waiting.
+     * @since 1.1.0
+     */
+    public boolean awaitTermination(final long timeout, final TimeUnit timeUnit)
+            throws InterruptedException {
+
+        return countDownLatch.await(timeout, timeUnit);
+    }
+
+    /**
+     * Shuts down each user's thread.
      */
     public void shutdownNow() {
         userService.shutdownNow();

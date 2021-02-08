@@ -9,6 +9,11 @@ import java.security.KeyPair;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Represents a user who is going to mine blocks apart from performing transactions.
@@ -19,6 +24,7 @@ import java.util.List;
  */
 public class Miner extends AbstractUser {
 
+    private ExecutorService miningService;
     private volatile boolean active = true;
     private volatile boolean terminated = false;
 
@@ -40,38 +46,55 @@ public class Miner extends AbstractUser {
     @Override
     public void run() {
         while (active) {
-            try {
-                Block block = null;
-                boolean isIn = false;
+            miningService = Executors.newSingleThreadExecutor();
+            CompletableFuture.supplyAsync(this::mineBlock, miningService)
+                    .whenComplete(((block, throwable) -> {
+                        if (nonNull(block)) {
+                            System.out.println(block);
+                            addCoins(100);
+                        } else if (nonNull(throwable)) {
+                            if (active) active = false;
+                        }
+                    }));
+            if (!active) break;
 
-                while (!isIn) {
-                    final Block prevBlock = blockChain.getLast();
-                    final List<Message> messages = new ArrayList<>(blockChain.getMessages());
-                    block = Blocks.mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
+            sleep();
+            if (!active) break;
 
-                    isIn = blockChain.putLast(block, block.getGenerationTime());
-                }
-
-                System.out.println(block);
-                addCoins(100);
-                sleep();
-                if (!active) break;
-
-                simulation.createAndPerformTransaction(this);
-            } catch (InterruptedException exception) {
-                active = false;
-            }
+            simulation.createAndPerformTransaction(this);
         }
 
         terminated = true;
     }
 
     /**
-     * Stops miner thread's {@code while} loop.
+     * Simulates the process of mining a block by a miner.
+     * @return A mined block that successfully added to a blockchain.
+     * @since 1.1.0
+     */
+    private Block mineBlock() {
+        Block block = null;
+        boolean isIn = false;
+
+        while (!isIn) {
+            final Block prevBlock = blockChain.getLast();
+            final List<Message> messages = new ArrayList<>(blockChain.getMessages());
+            block = Blocks.mineBlock(prevBlock, messages, new Date().getTime(), Thread.currentThread().getId());
+
+            isIn = blockChain.putLast(block, block.getGenerationTime());
+        }
+
+        return block;
+    }
+
+    /**
+     * Stops a miner's thread by exiting its {@code while} loop and stopping any other threads.
      */
     @Override
     public void terminate() {
         active = false;
+        sleepExecutor.shutdownNow();
+        miningService.shutdownNow();
     }
 
     @Override
@@ -95,12 +118,12 @@ public class Miner extends AbstractUser {
     }
 
     @Override
-    boolean isActive() {
+    public boolean isActive() {
         return active;
     }
 
     @Override
-    boolean isTerminated() {
+    public boolean isTerminated() {
         return terminated;
     }
 }
