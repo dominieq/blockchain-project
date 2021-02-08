@@ -1,5 +1,7 @@
 package org.example.blockchain.logic.users;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.Messages;
@@ -20,6 +22,7 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class AbstractUser implements Runnable {
 
+    private static final Logger LOGGER = LogManager.getLogger(AbstractUser.class);
     protected final String name;
     protected volatile int coins;
     protected final KeyPair keyPair;
@@ -94,7 +97,7 @@ public abstract class AbstractUser implements Runnable {
             try {
                 TimeUnit.SECONDS.sleep(new Random().nextInt(15) + 1);
             } catch (InterruptedException ignored) {
-                // TODO log exception
+                LOGGER.warn("{} internal sleep was interrupted.", this);
             }
         });
 
@@ -111,7 +114,7 @@ public abstract class AbstractUser implements Runnable {
         try {
             isTerminated = sleepExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
         } catch (InterruptedException ignored) {
-            // TODO log exception
+            LOGGER.warn("{} sleep execution was interrupted", this);
         } finally {
             if (!isTerminated) sleepExecutor.shutdownNow();
         }

@@ -1,5 +1,7 @@
 package org.example.blockchain.simulation;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.builder.TransactionBuilder;
 import org.example.blockchain.logic.users.AbstractUser;
@@ -23,6 +25,7 @@ import static java.util.Objects.isNull;
  */
 public class Simulation {
 
+    private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
     private final List<AbstractUser> users;
     private final ExecutorService userService;
     private CountDownLatch countDownLatch;
@@ -91,12 +94,13 @@ public class Simulation {
         countDownLatch = new CountDownLatch(users.size());
 
         users.forEach(user -> service.submit(() -> {
+            LOGGER.info("Stopping {}...", user);
             user.terminate();
 
             try {
                 while(!user.isTerminated()) TimeUnit.SECONDS.sleep(1);
             } catch (InterruptedException ignored) {
-                // TODO log exception
+                LOGGER.warn("{} was interrupted.", user);
             } finally {
                 countDownLatch.countDown();
             }

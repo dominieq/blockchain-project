@@ -1,5 +1,7 @@
 package org.example.blockchain;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
 import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
@@ -22,6 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SimulationStarter {
 
+    private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
     private static final int POOL_SIZE = 100;
     private static final int INITIAL_MINERS_COUNT = 15;
     private static final int INITIAL_USERS_COUNT = 30;
@@ -62,6 +65,7 @@ public class SimulationStarter {
         });
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOGGER.info("Gracefully shutting down application...");
             simulation.shutdown();
             boolean isTerminated = false;
 
