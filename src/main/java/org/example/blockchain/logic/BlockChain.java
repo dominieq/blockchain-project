@@ -36,7 +36,7 @@ public class BlockChain implements Serializable {
         numberOfZeros = 0;
         messages = new ArrayList<>();
         blocks = new ArrayList<>();
-        identifierStream = new IdentifierStream();
+        identifierStream = IdentifierStream.startAt(0);
     }
 
     /**

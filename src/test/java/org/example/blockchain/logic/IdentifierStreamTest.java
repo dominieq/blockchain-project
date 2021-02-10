@@ -2,6 +2,8 @@ package org.example.blockchain.logic;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
 
@@ -13,7 +15,21 @@ public class IdentifierStreamTest {
 
     @BeforeEach
     public void setUp() {
-        subject = new IdentifierStream();
+        subject = IdentifierStream.startAt(0);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, 50, 100})
+    public void should_get_unique_identifier(final int startingPoint) {
+
+        // given
+        subject = IdentifierStream.startAt(startingPoint);
+
+        // when
+        final int actual = subject.getNext();
+
+        // then
+        assertThat(actual).isBetween(startingPoint, startingPoint + 100);
     }
 
     @Test
