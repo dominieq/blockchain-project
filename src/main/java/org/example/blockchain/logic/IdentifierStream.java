@@ -41,7 +41,8 @@ public class IdentifierStream {
      * Generates a random stream of ints from a specified range
      * and then finds the first value that is greater than the starting point.
      * If there are no such results, increments the starting point by 1.
-     * If a next value is exceeding the current range, creates a new range {@code [startingPoint; startingPoint + 100)}.
+     * If the next value is exceeding the current range,
+     * creates a new range {@code [current upper boundary; current upper boundary + 100)}.
      *
      * @return A unique identifier
      */
