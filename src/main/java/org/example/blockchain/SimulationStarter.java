@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SimulationStarter {
 
-    private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
+    private static final Logger LOGGER = LogManager.getLogger(SimulationStarter.class);
     private static final int POOL_SIZE = 100;
     private static final int INITIAL_MINERS_COUNT = 15;
     private static final int INITIAL_USERS_COUNT = 30;
@@ -70,9 +70,9 @@ public class SimulationStarter {
             boolean isTerminated = false;
 
             try {
-                isTerminated = simulation.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+                isTerminated = simulation.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
             } catch (InterruptedException ignored) {
-
+                LOGGER.warn("Graceful shutdown was interrupted.");
             } finally {
                 if (!isTerminated) simulation.shutdownNow();
             }

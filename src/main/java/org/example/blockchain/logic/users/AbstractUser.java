@@ -112,7 +112,7 @@ public abstract class AbstractUser implements Runnable {
         boolean isTerminated = false;
 
         try {
-            isTerminated = sleepExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            isTerminated = sleepExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
             LOGGER.warn("{} sleep execution was interrupted", this);
         } finally {
