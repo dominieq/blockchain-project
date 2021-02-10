@@ -47,7 +47,7 @@ public class SimpleUser extends AbstractUser {
     }
 
     /**
-     * Stops a simple user's thread by  exiting its {@code while} loop and stopping any other thread.
+     * Stops simple user's thread by exiting its {@code while} loop and stopping any other thread.
      */
     @Override
     public void terminate() {

@@ -69,7 +69,7 @@ public class Miner extends AbstractUser {
 
     /**
      * Simulates the process of mining a block by a miner.
-     * @return A mined block that successfully added to a blockchain.
+     * @return A new block that was successfully added to a blockchain.
      * @since 1.1.0
      */
     private Block mineBlock() {
@@ -88,7 +88,7 @@ public class Miner extends AbstractUser {
     }
 
     /**
-     * Stops a miner's thread by exiting its {@code while} loop and stopping any other threads.
+     * Stops miner's thread by exiting its {@code while} loop and stopping any other threads.
      */
     @Override
     public void terminate() {
