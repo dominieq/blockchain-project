@@ -597,33 +597,6 @@ public class BlockChainTest {
     }
 
     @Test
-    public void should_not_increase_nor_decrease_number_of_zeros()
-            throws NoSuchFieldException, IllegalAccessException {
-
-        // given
-        final Block block = spy(getBlock()
-                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L + 876285186))
-                .withMagicNumber(876285186)
-                .build());
-
-        final Field field = BlockChain.class.getDeclaredField("numberOfZeros");
-        field.setAccessible(true);
-        field.set(subject, 6);
-
-        // when
-        final boolean actual = subject.putLast(block, 29);
-
-        // then
-        assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
-        verifyAttemptToAddBlockToEmptyList(block, 1);
-        verify(block, times(1)).getMessages();
-        verify(block, times(1)).setNProgress(6);
-        assertThat(subject.getNumberOfZeros()).isEqualTo(6);
-        assertThat(block.getNProgress()).isEqualTo(6);
-    }
-
-    @Test
     public void should_decrease_number_of_zeros()
             throws NoSuchFieldException, IllegalAccessException {
 

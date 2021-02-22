@@ -9,10 +9,10 @@ import org.example.blockchain.logic.message.builder.SecureMessageBuilder;
 import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 /**
  * Represents a real life blockchain user who can perform transactions that may be included in one of the blocks.
@@ -28,7 +28,8 @@ public abstract class AbstractUser implements Runnable {
     protected final KeyPair keyPair;
     protected final BlockChain blockChain;
     protected final Simulation simulation;
-    protected ExecutorService sleepExecutor;
+    protected CompletableFuture<Boolean> sleeping;
+    protected final Object SLEEP_LOCK = new Object();
 
     /**
      * Create an {@code AbstractUser} with all necessary fields.
@@ -86,44 +87,77 @@ public abstract class AbstractUser implements Runnable {
     }
 
     /**
-     * Submits a new thread that sleeps for random amount of time between 1 and 15 seconds.
-     * Immediately, shuts down the executor to await its termination.
-     * @since 1.1.0
+     * Calls a sleep method on the provided {@code timeUnit} with given {@code timeout}.
+     * @param timeout The maximum time to sleep.
+     * @param timeUnit The time unit of the timeout argument.
+     * @return {@code true} if the sleep executed without interruptions, otherwise returns {@code false}.
      */
-    private void executeSleep() {
-        sleepExecutor = Executors.newSingleThreadExecutor();
+    protected boolean executeSleep(final long timeout, final TimeUnit timeUnit) {
+        if (timeout <= 0 || isNull(timeUnit)) return false;
 
-        sleepExecutor.submit(() -> {
-            try {
-                TimeUnit.SECONDS.sleep(new Random().nextInt(15) + 1);
-            } catch (InterruptedException ignored) {
-                LOGGER.warn("{} internal sleep was interrupted.", this);
-            }
-        });
+        try {
+            LOGGER.trace("{} is sleeping for {} {}.", this, timeout, timeUnit);
+            timeUnit.sleep(timeout);
+            LOGGER.trace("{} slept for {} {}.", this, timeout, timeUnit);
+        } catch (final InterruptedException ignored) {
+            LOGGER.debug("{} internal sleep was interrupted.", this);
+            return false;
+        }
 
-        sleepExecutor.shutdown();
+        return true;
     }
 
     /**
-     * Awaits the termination of a sleep execution called within {@link #executeSleep()} method.
+     * Starts sleep execution if the previous one hasn't been cancelled.
+     * Uses {@link #executeSleep(long, TimeUnit)} as a supplier for {@link CompletableFuture}.
+     * @param timeout The maximum time to sleep.
+     * @param timeUnit The time unit of the timeout argument.
      */
-    protected void sleep() {
-        executeSleep();
-        boolean isTerminated = false;
+    protected void sleep(final long timeout, final TimeUnit timeUnit) {
+        if (timeout <= 0 || isNull(timeUnit)) return;
+
+        synchronized (SLEEP_LOCK) {
+            if (nonNull(sleeping) && sleeping.isCancelled()) {
+                LOGGER.trace("Sleeping has already been cancelled. {} cannot sleep right now.", this);
+                return;
+            }
+
+            sleeping = CompletableFuture.supplyAsync(() -> executeSleep(timeout, timeUnit));
+        }
 
         try {
-            isTerminated = sleepExecutor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-        } catch (InterruptedException ignored) {
-            LOGGER.warn("{} sleep execution was interrupted", this);
-        } finally {
-            if (!isTerminated) sleepExecutor.shutdownNow();
+            sleeping.get();
+        } catch (final Exception ignored) {
+            LOGGER.debug("{} sleep execution was interrupted", this);
         }
     }
 
     /**
-     * Each {@code AbstractUser} implementation should provide a method to stop it's thread's {@code while} loop.
+     * Starts sleep execution if the previous one hasn't been cancelled.
+     * Uses {@link #executeSleep(long, TimeUnit)} as a supplier for {@link CompletableFuture}.
+     * @param timeout The maximum time to sleep in seconds.
+     * @since 1.1.0
      */
-    abstract public void terminate();
+    protected void sleep(final long timeout) {
+        sleep(timeout, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Provides a default implementation that tries to cancel sleeping.
+     * All classes that extend {@code AbstractUser} should override this method
+     * and set active to false.
+     */
+    public void terminate() {
+        synchronized (SLEEP_LOCK) {
+            if (isNull(sleeping)) {
+                LOGGER.trace("Sleeping hasn't been performed yet. Creating cancelled result...");
+                sleeping = CompletableFuture.failedFuture(new CancellationException());
+            } else {
+                LOGGER.trace("Sleeping has already finished or is in progress. Cancelling process...");
+                sleeping.obtrudeException(new CancellationException());
+            }
+        }
+    }
 
     @Override
     public String toString() {

@@ -53,9 +53,10 @@ public class BlocksTest {
 
             mockedBlocks.when(() -> Blocks.findMagicNumber(0, input)).thenReturn(1);
             mockedBlocks.when(() -> Blocks.applySha256(input + 1)).thenReturn("1");
-            mockedBlocks.when(() -> Blocks.mineBlock(null, new ArrayList<>(), timestamp, createdBy)).thenCallRealMethod();
+            mockedBlocks.when(() -> Blocks.mineBlock(null, new ArrayList<>(), 0, timestamp, createdBy))
+                    .thenCallRealMethod();
 
-            actual = Blocks.mineBlock(null, new ArrayList<>(), timestamp, createdBy);
+            actual = Blocks.mineBlock(null, new ArrayList<>(), 0, timestamp, createdBy);
 
             mockedBlocks.verify(times(1), () -> Blocks.findMagicNumber(0, input));
             mockedBlocks.verify(times(1), () -> Blocks.applySha256(input + 1));
@@ -79,7 +80,7 @@ public class BlocksTest {
         final List<Message> messages = new ArrayList<>(Collections.singletonList(mock(Message.class)));
 
         // when
-        final Block actual = Blocks.mineBlock(null, messages, 1L, 1L);
+        final Block actual = Blocks.mineBlock(null, messages, 0, 1L, 1L);
 
         // then
         assertThat(actual.getId()).isEqualTo(1L);
@@ -96,7 +97,7 @@ public class BlocksTest {
         // given
         final long prevTimestamp = new Date().getTime();
         final long createdBy = Thread.currentThread().getId();
-        final Block prevBlock = Blocks.mineBlock(null, new ArrayList<>(), prevTimestamp, createdBy);
+        final Block prevBlock = Blocks.mineBlock(null, new ArrayList<>(),0, prevTimestamp, createdBy);
 
         final long timestamp = new Date().getTime();
 
@@ -105,13 +106,14 @@ public class BlocksTest {
         try (MockedStatic<Blocks> mockedBlocks = mockStatic(Blocks.class)) {
             final String input = 2L + timestamp + prevBlock.getHash() + createdBy;
 
-            mockedBlocks.when(() -> Blocks.findMagicNumber(0, input)).thenReturn(1);
+            mockedBlocks.when(() -> Blocks.findMagicNumber(1, input)).thenReturn(1);
             mockedBlocks.when(() -> Blocks.applySha256(input + 1)).thenReturn("1");
-            mockedBlocks.when(() -> Blocks.mineBlock(prevBlock, new ArrayList<>(), timestamp, createdBy)).thenCallRealMethod();
+            mockedBlocks.when(() -> Blocks.mineBlock(prevBlock, new ArrayList<>(),1, timestamp, createdBy))
+                    .thenCallRealMethod();
 
-            actual = Blocks.mineBlock(prevBlock, new ArrayList<>(), timestamp, createdBy);
+            actual = Blocks.mineBlock(prevBlock, new ArrayList<>(), 1, timestamp, createdBy);
 
-            mockedBlocks.verify(times(1), () -> Blocks.findMagicNumber(0, input));
+            mockedBlocks.verify(times(1), () -> Blocks.findMagicNumber(1, input));
             mockedBlocks.verify(times(1), () -> Blocks.applySha256(input + 1));
         }
 
@@ -122,7 +124,7 @@ public class BlocksTest {
         assertThat(actual.getHash()).isEqualTo("1");
         assertThat(actual.getPreviousHash()).isEqualTo(prevBlock.getHash());
         assertThat(actual.getCreatedBy()).isEqualTo(createdBy);
-        assertThat(actual.getNProgress()).isEqualTo(0);
+        assertThat(actual.getNProgress()).isEqualTo(1);
         assertThat(actual.getMessages()).isEmpty();
     }
 
@@ -130,18 +132,18 @@ public class BlocksTest {
     public void should_include_messages_when_not_first_block() {
 
         // given
-        final Block prevBlock = Blocks.mineBlock(null, new ArrayList<>(), 1L, 1L);
+        final Block prevBlock = Blocks.mineBlock(null, new ArrayList<>(), 0, 1L, 1L);
         final List<Message> messages = new ArrayList<>(Collections.singletonList(mock(Message.class)));
 
         // when
-        final Block actual = Blocks.mineBlock(prevBlock, messages, 2L, 2L);
+        final Block actual = Blocks.mineBlock(prevBlock, messages, 1, 2L, 2L);
 
         // then
         assertThat(actual.getId()).isEqualTo(2L);
         assertThat(actual.getTimestamp()).isEqualTo(2L);
         assertThat(actual.getPreviousHash()).isEqualTo(prevBlock.getHash());
         assertThat(actual.getCreatedBy()).isEqualTo(2L);
-        assertThat(actual.getNProgress()).isEqualTo(0);
+        assertThat(actual.getNProgress()).isEqualTo(1);
         assertThat(actual.getMessages()).isEqualTo(messages);
     }
 }

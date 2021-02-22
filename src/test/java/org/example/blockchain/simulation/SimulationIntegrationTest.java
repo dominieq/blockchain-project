@@ -4,8 +4,10 @@ import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
 import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
 import org.example.blockchain.simulation.builder.SimulationBuilder;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.security.KeyPairGenerator;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -16,11 +18,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimulationIntegrationTest {
 
-    @Test
-    public void should_gracefully_shut_down_simulation()
-            throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
+        final Field field = BlockChain.class.getDeclaredField("instance");
+        field.setAccessible(true);
+        field.set(null, null);
+    }
 
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
+    @Test
+    public void should_gracefully_shut_down_simulation() throws Exception {
+
+        final KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
         keyGen.initialize(2048);
 
         final Simulation simulation = SimulationBuilder.builder()

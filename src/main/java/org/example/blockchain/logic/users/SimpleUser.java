@@ -5,6 +5,7 @@ import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a simple blockchain user who is only going to perform transactions.
@@ -15,8 +16,8 @@ import java.util.Random;
  */
 public class SimpleUser extends AbstractUser {
 
-    private volatile boolean active = true;
-    private volatile boolean terminated = false;
+    private final AtomicBoolean active = new AtomicBoolean(true);
+    private final AtomicBoolean terminated = new AtomicBoolean(false);
 
     /**
      * Create a {@code SimpleUser} with all necessary fields.
@@ -35,15 +36,15 @@ public class SimpleUser extends AbstractUser {
 
     @Override
     public void run() {
-        while (active) {
+        while (active.get()) {
             simulation.createAndPerformTransaction(this);
             addCoins(new Random().nextInt(100) + 1);
 
-            sleep();
-            if (!active) break;
+            sleep(new Random().nextInt(15) + 1);
+            if (!active.get()) break;
         }
 
-        terminated = true;
+        terminated.set(true);
     }
 
     /**
@@ -51,8 +52,8 @@ public class SimpleUser extends AbstractUser {
      */
     @Override
     public void terminate() {
-        active = false;
-        sleepExecutor.shutdownNow();
+        active.set(false);
+        super.terminate();
     }
 
     @Override
@@ -77,11 +78,11 @@ public class SimpleUser extends AbstractUser {
 
     @Override
     public boolean isActive() {
-        return active;
+        return active.get();
     }
 
     @Override
     public boolean isTerminated() {
-        return terminated;
+        return terminated.get();
     }
 }
