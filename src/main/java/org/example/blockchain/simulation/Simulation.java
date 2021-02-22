@@ -5,14 +5,12 @@ import org.apache.logging.log4j.Logger;
 import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.logic.message.builder.TransactionBuilder;
 import org.example.blockchain.logic.users.AbstractUser;
+import org.example.blockchain.simulation.administrator.Administrator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static java.util.Objects.isNull;
 
@@ -28,18 +26,22 @@ public class Simulation {
     private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
     private final List<AbstractUser> users;
     private final ExecutorService userService;
+    private final ScheduledExecutorService adminService;
     private CountDownLatch countDownLatch;
 
     /**
      * Create a {@code Simulation} with all needed fields.
      * @param users A list of users that will participate in a simulation.
      * @param userService A service that will manage threads.
+     * @param adminService A scheduled service that will manage {@link Administrator}s thread.
      */
     public Simulation(final List<AbstractUser> users,
-                      final ExecutorService userService) {
+                      final ExecutorService userService,
+                      final ScheduledExecutorService adminService) {
 
         this.users = users;
         this.userService = userService;
+        this.adminService = adminService;
     }
 
     /**
@@ -78,6 +80,15 @@ public class Simulation {
     }
 
     /**
+     * Adds an {@link Administrator} to a {@code Simulation} and starts its thread in the {@link #adminService}.
+     * @param administrator An {@code Administrator} that is to be added to a {@code Simulation}.
+     * @since 1.1.0
+     */
+    public void submitAdministrator(final Administrator administrator) {
+       adminService.scheduleAtFixedRate(administrator, 15L, 15L, TimeUnit.SECONDS);
+    }
+
+    /**
      * Adds user to the list of all users and then starts user's thread.
      * @param user A user that is to be submitted to the {@code Simulation}.
      */
@@ -90,6 +101,9 @@ public class Simulation {
      * Gracefully stops each user.
      */
     public synchronized void shutdown() {
+        LOGGER.info("Stopping administrator...");
+        adminService.shutdownNow();
+
         final ExecutorService service = Executors.newFixedThreadPool(users.size());
         countDownLatch = new CountDownLatch(users.size());
 
@@ -135,5 +149,9 @@ public class Simulation {
 
     public ExecutorService getUserService() {
         return userService;
+    }
+
+    public ScheduledExecutorService getAdminService() {
+        return adminService;
     }
 }

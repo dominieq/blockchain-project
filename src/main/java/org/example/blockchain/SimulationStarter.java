@@ -6,6 +6,8 @@ import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.logic.users.builder.MinerBuilder;
 import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
 import org.example.blockchain.simulation.Simulation;
+import org.example.blockchain.simulation.administrator.Administrator;
+import org.example.blockchain.simulation.administrator.builder.AdministratorBuilder;
 import org.example.blockchain.simulation.builder.SimulationBuilder;
 
 import java.security.KeyPairGenerator;
@@ -35,9 +37,15 @@ public class SimulationStarter {
 
         final Simulation simulation = SimulationBuilder.builder()
                 .withUsers(new ArrayList<>())
-                .withFixedThreadPool(POOL_SIZE)
+                .withFixedUserService(POOL_SIZE)
+                .withSingleThreadAdminService()
                 .build();
         final BlockChain blockChain = BlockChain.getInstance();
+
+        final Administrator administrator = AdministratorBuilder.builder()
+                .in(simulation)
+                .manage(blockChain)
+                .build();
 
         final ExecutorService minerSupplier = Executors.newSingleThreadExecutor();
         final ExecutorService userSupplier = Executors.newSingleThreadExecutor();
@@ -64,13 +72,15 @@ public class SimulationStarter {
             }
         });
 
+        simulation.submitAdministrator(administrator);
+
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("Gracefully shutting down application...");
             simulation.shutdown();
             boolean isTerminated = false;
 
             try {
-                isTerminated = simulation.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+                isTerminated = simulation.awaitTermination(5L, TimeUnit.SECONDS);
             } catch (InterruptedException ignored) {
                 LOGGER.warn("Graceful shutdown was interrupted.");
             } finally {

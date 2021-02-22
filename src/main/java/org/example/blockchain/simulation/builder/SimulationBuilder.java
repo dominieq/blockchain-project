@@ -6,6 +6,7 @@ import org.example.blockchain.simulation.Simulation;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * A builder for the {@link Simulation} class.
@@ -18,6 +19,7 @@ public final class SimulationBuilder {
 
     private List<AbstractUser> users;
     private ExecutorService userService;
+    private ScheduledExecutorService adminService;
 
     private SimulationBuilder() {}
 
@@ -35,12 +37,22 @@ public final class SimulationBuilder {
         return this;
     }
 
-    public SimulationBuilder withFixedThreadPool(final int nThreads) {
+    public SimulationBuilder withFixedUserService(final int nThreads) {
         this.userService = Executors.newFixedThreadPool(nThreads);
         return this;
     }
 
+    public SimulationBuilder withAdminService(final ScheduledExecutorService administrator) {
+        this.adminService = administrator;
+        return this;
+    }
+
+    public SimulationBuilder withSingleThreadAdminService() {
+        this.adminService = Executors.newSingleThreadScheduledExecutor();
+        return this;
+    }
+
     public Simulation build() {
-        return new Simulation(users, userService);
+        return new Simulation(users, userService, adminService);
     }
 }

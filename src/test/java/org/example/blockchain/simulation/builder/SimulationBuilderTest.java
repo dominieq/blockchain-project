@@ -8,10 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class SimulationBuilderTest {
 
@@ -23,39 +24,49 @@ public class SimulationBuilderTest {
     }
 
     @Test
-    public void should_build_simulation_with_custom_executor_service() {
+    public void should_build_simulation_with_custom_values() {
 
         // given
         final List<AbstractUser> users = new ArrayList<>();
-        final ExecutorService userService = Executors.newSingleThreadExecutor();
+        final ExecutorService userService = mock(ExecutorService.class);
+        final ScheduledExecutorService adminService = mock(ScheduledExecutorService.class);
 
         // when
         final Simulation actual = subject
                 .withUsers(users)
                 .withUserService(userService)
+                .withAdminService(adminService)
                 .build();
 
         // then
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("users", users)
-                .hasFieldOrPropertyWithValue("userService", userService);
+                .hasFieldOrPropertyWithValue("userService", userService)
+                .hasFieldOrPropertyWithValue("adminService", adminService);
     }
 
     @Test
-    public void should_build_simulation_with_default_executor_service() {
-
-        // given
-        final List<AbstractUser> users = new ArrayList<>();
+    public void should_build_simulation_with_default_user_service() {
 
         // when
         final Simulation actual = subject
-                .withUsers(users)
-                .withFixedThreadPool(5)
+                .withFixedUserService(5)
                 .build();
 
         // then
-        assertThat(actual).hasFieldOrPropertyWithValue("users", users);
         assertThat(actual.getUserService()).isInstanceOf(ThreadPoolExecutor.class);
+    }
+
+    @Test
+    public void should_build_simulation_with_default_admin_service() {
+
+        // when
+        final Simulation actual = subject
+                .withSingleThreadAdminService()
+                .build();
+
+        // then
+        assertThat(actual.getAdminService()).isInstanceOf(ScheduledExecutorService.class);
     }
 }
 
