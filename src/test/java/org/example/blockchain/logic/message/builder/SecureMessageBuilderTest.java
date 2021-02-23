@@ -46,12 +46,11 @@ public class SecureMessageBuilderTest {
                 .build();
 
         // then
-        assertThat(actual)
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("id", id)
-                .hasFieldOrPropertyWithValue("text", text)
-                .hasFieldOrPropertyWithValue("signature", sign)
-                .hasFieldOrPropertyWithValue("publicKey", keyPair.getPublic());
+        assertThat(actual).isNotNull();
+        assertThat(actual.getId()).isEqualTo(id);
+        assertThat(actual.getText()).isEqualTo(text);
+        assertThat(actual.getSignature()).isEqualTo(sign);
+        assertThat(actual).hasFieldOrPropertyWithValue("publicKey", keyPair.getPublic());
     }
 
     @Test
@@ -64,13 +63,16 @@ public class SecureMessageBuilderTest {
         final byte[] sign = Messages.sign(text + id, keyPair.getPrivate());
 
         // when
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> subject
-                        .withId(2)
-                        .withText("Wrong text message")
-                        .withSignature(sign)
-                        .withPublicKey(keyPair.getPublic())
-                        .build()
-        ).withMessage("Failed signature verification");
+        final Throwable actual = catchThrowable(() -> subject
+                .withId(2)
+                .withText("Wrong text message")
+                .withSignature(sign)
+                .withPublicKey(keyPair.getPublic())
+                .build());
+        // then
+        assertThat(actual)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Failed signature verification")
+                .hasNoCause();
     }
 }
