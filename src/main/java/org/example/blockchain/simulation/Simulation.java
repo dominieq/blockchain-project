@@ -24,10 +24,10 @@ import static java.util.Objects.isNull;
 public class Simulation {
 
     private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
-    private final List<AbstractUser> users;
-    private final ExecutorService userService;
-    private final ScheduledExecutorService adminService;
-    private CountDownLatch countDownLatch;
+    protected final List<AbstractUser> users;
+    protected final ExecutorService userService;
+    protected final ScheduledExecutorService adminService;
+    protected CountDownLatch countDownLatch;
 
     /**
      * Create a {@code Simulation} with all needed fields.
@@ -73,7 +73,7 @@ public class Simulation {
                 .withMessage(user.prepareMessage())
                 .build();
 
-        if (user.getBlockChain().addMessage(transaction)) {
+        if (user.sendMessage(transaction)) {
             chosenUser.addCoins(chosenCoins);
             user.takeCoins(chosenCoins);
         }
@@ -143,15 +143,11 @@ public class Simulation {
         userService.shutdownNow();
     }
 
-    public List<AbstractUser> getUsers() {
-        return users;
-    }
-
-    public ExecutorService getUserService() {
-        return userService;
-    }
-
-    public ScheduledExecutorService getAdminService() {
-        return adminService;
+    /**
+     * Retrieves the content of users list.
+     * @return The current content of users list.
+     */
+    public List<AbstractUser> getCurrentUsers() {
+        return new ArrayList<>(users);
     }
 }

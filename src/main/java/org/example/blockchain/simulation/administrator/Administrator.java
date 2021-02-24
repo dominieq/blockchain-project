@@ -30,8 +30,8 @@ public class Administrator implements Runnable {
      */
     private static final int STAGNANCY_THRESHOLD = 5;
 
-    private final Simulation simulation;
-    private final BlockChain blockchain;
+    protected final Simulation simulation;
+    protected final BlockChain blockchain;
     private int prevBlockchainSize;
     private int stagnancy;
 
@@ -67,7 +67,7 @@ public class Administrator implements Runnable {
         if (currentBlockchainSize == prevBlockchainSize) {
             LOGGER.info("No progress registered. Stopping miners and resetting number of zeros...");
 
-            simulation.getUsers().stream()
+            simulation.getCurrentUsers().stream()
                     .filter(user -> user instanceof Miner)
                     .map(user -> (Miner) user)
                     .parallel()

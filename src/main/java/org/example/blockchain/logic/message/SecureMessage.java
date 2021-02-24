@@ -1,5 +1,8 @@
 package org.example.blockchain.logic.message;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
+
 import java.security.*;
 
 /**
@@ -40,22 +43,26 @@ public class SecureMessage implements Message {
     }
 
     @Override
-    public int hashCode() {
-        return id;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SecureMessage)) return false;
+        SecureMessage that = (SecureMessage) o;
+        return id == that.id;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof SecureMessage)) {
-            return false;
-        }
-
-        return id == ((SecureMessage) obj).getId();
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 
     @Override
     public String toString() {
-        return "Identifier: " + id + " Content: " + text;
+        return MoreObjects.toStringHelper(this)
+                .add("text", text)
+                .add("id", id)
+                .add("signature", signature)
+                .add("publicKey", publicKey)
+                .toString();
     }
 
     @Override

@@ -54,7 +54,9 @@ public class SimulationBuilderTest {
                 .build();
 
         // then
-        assertThat(actual.getUserService()).isInstanceOf(ThreadPoolExecutor.class);
+        assertThat(actual)
+                .extracting("userService")
+                .hasOnlyElementsOfType(ThreadPoolExecutor.class);
     }
 
     @Test
@@ -66,7 +68,9 @@ public class SimulationBuilderTest {
                 .build();
 
         // then
-        assertThat(actual.getAdminService()).isInstanceOf(ScheduledExecutorService.class);
+        assertThat(actual)
+                .extracting("adminService")
+                .hasOnlyElementsOfType(ScheduledExecutorService.class);
     }
 }
 

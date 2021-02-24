@@ -10,11 +10,14 @@ import org.example.blockchain.logic.message.Message;
 import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
-import java.util.ArrayList;
+import java.security.PublicKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.*;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Objects.isNull;
@@ -113,7 +116,7 @@ public class Miner extends AbstractUser {
 
         while (!isIn) {
             final Tuple2<Block, Integer> last = blockChain.getLastWithNumberOfZeros();
-            final List<Message> messages = new ArrayList<>(blockChain.getMessages());
+            final List<Message> messages = blockChain.getCurrentMessages();
             final long timestamp = new Date().getTime();
 
             block = Blocks.mineBlock(last._1, messages, last._2, timestamp, Thread.currentThread().getId());
@@ -153,13 +156,8 @@ public class Miner extends AbstractUser {
     }
 
     @Override
-    public BlockChain getBlockChain() {
-        return blockChain;
-    }
-
-    @Override
-    public KeyPair getKeyPair() {
-        return keyPair;
+    public PublicKey getPublicKey() {
+        return keyPair.getPublic();
     }
 
     @Override

@@ -467,7 +467,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).isEmpty();
+        assertThat(subject.blocks).isEmpty();
     }
 
     @Test
@@ -481,7 +481,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).isEmpty();
+        assertThat(subject.blocks).isEmpty();
         verifyBlockWasValidated(block, 1);
     }
 
@@ -501,7 +501,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).isEmpty();
+        assertThat(subject.blocks).isEmpty();
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, never()).getMessages();
     }
@@ -519,14 +519,14 @@ public class BlockChainTest {
                 .withHash(Blocks.applySha256(1L + 1L + "666" + 1L + -1))
                 .build());
 
-        subject.getBlocks().add(prevBlock);
+        subject.blocks.add(prevBlock);
 
         // when
         final boolean actual = subject.putLast(block);
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).containsOnly(prevBlock);
+        assertThat(subject.blocks).containsOnly(prevBlock);
         verifyBlockPairWasValidated(prevBlock, block, 1);
         verify(block, never()).getMessages();
 
@@ -543,7 +543,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
+        assertThat(subject.blocks).contains(block);
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, times(1)).getMessages();
     }
@@ -559,14 +559,14 @@ public class BlockChainTest {
                 .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
                 .build());
 
-        subject.getBlocks().add(prevBlock);
+        subject.blocks.add(prevBlock);
 
         // when
         final boolean actual = subject.putLast(block);
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).containsExactly(prevBlock, block);
+        assertThat(subject.blocks).containsExactly(prevBlock, block);
         verifyAttemptToAddBlockToList(prevBlock, block, 1);
         verify(block, times(1)).getMessages();
     }
@@ -588,7 +588,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
+        assertThat(subject.blocks).contains(block);
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(1);
@@ -615,7 +615,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
+        assertThat(subject.blocks).contains(block);
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(0);
@@ -637,7 +637,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getMessages()).isEmpty();
+        assertThat(subject.messages).isEmpty();
     }
 
     @Test
@@ -651,7 +651,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getMessages()).containsOnly(message);
+        assertThat(subject.messages).containsOnly(message);
         verifyNoInteractions(message);
     }
 
@@ -676,7 +676,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getMessages()).containsOnly(prevMessage);
+        assertThat(subject.messages).containsOnly(prevMessage);
         verify(prevMessage, times(1)).getId();
         verify(message, times(1)).getId();
     }
@@ -701,7 +701,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getMessages()).containsExactly(prevMessage, message);
+        assertThat(subject.messages).containsExactly(prevMessage, message);
         verify(prevMessage, times(1)).getId();
         verify(message, times(1)).getId();
     }

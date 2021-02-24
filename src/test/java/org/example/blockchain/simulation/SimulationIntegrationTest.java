@@ -69,7 +69,7 @@ public class SimulationIntegrationTest {
         final boolean actual = simulation.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 
         assertThat(actual).isTrue();
-        simulation.getUsers().forEach(user -> {
+        simulation.users.forEach(user -> {
             assertThat(user.isActive()).isFalse();
             assertThat(user.isTerminated()).isTrue();
         });

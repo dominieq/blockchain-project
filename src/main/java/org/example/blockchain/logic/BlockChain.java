@@ -25,8 +25,8 @@ public class BlockChain implements Serializable {
 
     private static BlockChain instance;
     private int numberOfZeros;
-    private final List<Message> messages;
-    private final List<Block> blocks;
+    protected final List<Message> messages;
+    protected final List<Block> blocks;
     private final IdentifierStream identifierStream;
     private static final Object IDENTIFIER_LOCK = new Object();
     private static final Object MESSAGES_LOCK = new Object();
@@ -278,8 +278,22 @@ public class BlockChain implements Serializable {
         return true;
     }
 
+    /**
+     * Thread safe method to get the size of a {@code BlockChain}.
+     * @return The current size of a {@code BlockChain}.
+     */
     public synchronized int size() {
         return blocks.size();
+    }
+
+    /**
+     * Thread safe method to retrieve the content of messages list.
+     * @return The current content of messages list.
+     */
+    public List<Message> getCurrentMessages() {
+        synchronized (MESSAGES_LOCK) {
+            return new ArrayList<>(messages);
+        }
     }
 
     public synchronized int getNumberOfZeros() {
@@ -288,15 +302,5 @@ public class BlockChain implements Serializable {
 
     public synchronized void setNumberOfZeros(final int numberOfZeros) {
         this.numberOfZeros = numberOfZeros;
-    }
-
-    public List<Message> getMessages() {
-        synchronized (MESSAGES_LOCK) {
-            return messages;
-        }
-    }
-
-    public synchronized List<Block> getBlocks() {
-        return blocks;
     }
 }

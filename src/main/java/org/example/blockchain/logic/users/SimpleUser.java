@@ -4,6 +4,7 @@ import org.example.blockchain.logic.BlockChain;
 import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -67,13 +68,8 @@ public class SimpleUser extends AbstractUser {
     }
 
     @Override
-    public KeyPair getKeyPair() {
-        return keyPair;
-    }
-
-    @Override
-    public BlockChain getBlockChain() {
-        return blockChain;
+    public PublicKey getPublicKey() {
+        return keyPair.getPublic();
     }
 
     @Override

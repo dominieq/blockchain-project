@@ -44,13 +44,13 @@ public class AdministratorTest {
         final Miner miner2 = mock(Miner.class);
         final List<AbstractUser> users = Arrays.asList(miner1, miner2);
 
-        doReturn(users).when(simulation).getUsers();
+        doReturn(users).when(simulation).getCurrentUsers();
 
         // when
         subject.run();
 
         // then
-        verify(simulation, times(1)).getUsers();
+        verify(simulation, times(1)).getCurrentUsers();
         verify(miner1, times(1)).stopMining();
         verify(miner2, times(1)).stopMining();
         verify(blockchain, atLeastOnce()).size();

@@ -38,7 +38,7 @@ public class MinerTest {
 
         // given
         when(blockchain.getLastWithNumberOfZeros()).thenReturn(Tuple.of(null, 0));
-        when(blockchain.getMessages()).thenReturn(Collections.emptyList());
+        when(blockchain.getCurrentMessages()).thenReturn(Collections.emptyList());
         when(blockchain.putLastAndDisplay(any(Block.class), anyLong())).thenReturn(true);
 
         // when
@@ -50,7 +50,7 @@ public class MinerTest {
         assertThat(actual.getMessages()).isEmpty();
         assertThat(actual.getNProgress()).isZero(); // Blockchain is mocked so n progress wasn't changed.
         verify(blockchain, times(1)).getLastWithNumberOfZeros();
-        verify(blockchain, times(1)).getMessages();
+        verify(blockchain, times(1)).getCurrentMessages();
         verify(blockchain, times(1)).putLastAndDisplay(any(Block.class), anyLong());
     }
 }

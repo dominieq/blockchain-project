@@ -1,5 +1,6 @@
 package org.example.blockchain.logic.users;
 
+import com.google.common.base.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.blockchain.logic.BlockChain;
@@ -9,6 +10,7 @@ import org.example.blockchain.logic.message.builder.SecureMessageBuilder;
 import org.example.blockchain.simulation.Simulation;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.concurrent.*;
 
 import static java.util.Objects.isNull;
@@ -66,6 +68,16 @@ public abstract class AbstractUser implements Runnable {
                 .withSignature(signature)
                 .withPublicKey(keyPair.getPublic())
                 .build();
+    }
+
+    /**
+     * Tries to add provided {@code Message} to a {@link BlockChain}.
+     * @param message A message that is to be added to a {@link BlockChain}.
+     * @return {@code true} if a message was added to a {@link BlockChain}, otherwise returns {@code false}.
+     * @see BlockChain#addMessage(Message)
+     */
+    public boolean sendMessage(final Message message) {
+        return blockChain.addMessage(message);
     }
 
     /**
@@ -144,8 +156,7 @@ public abstract class AbstractUser implements Runnable {
 
     /**
      * Provides a default implementation that tries to cancel sleeping.
-     * All classes that extend {@code AbstractUser} should override this method
-     * and set active to false.
+     * All classes that extend {@code AbstractUser} should override this method and set active to false.
      */
     public void terminate() {
         synchronized (SLEEP_LOCK) {
@@ -160,6 +171,19 @@ public abstract class AbstractUser implements Runnable {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AbstractUser)) return false;
+        AbstractUser user = (AbstractUser) o;
+        return Objects.equal(name, user.name) && Objects.equal(keyPair, user.keyPair);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name, keyPair);
+    }
+
+    @Override
     public String toString() {
         return name;
     }
@@ -168,9 +192,7 @@ public abstract class AbstractUser implements Runnable {
 
     abstract public int getCoins();
 
-    abstract public KeyPair getKeyPair();
-
-    abstract public BlockChain getBlockChain();
+    abstract public PublicKey getPublicKey();
 
     abstract public boolean isActive();
 
