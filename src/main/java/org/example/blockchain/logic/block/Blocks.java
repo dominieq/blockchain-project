@@ -5,6 +5,8 @@ import org.example.blockchain.logic.message.Message;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -91,12 +93,12 @@ public final class Blocks {
             previousHash = prevBlock.getHash();
         }
 
-        final long start = System.currentTimeMillis();
+        final LocalDateTime start = LocalDateTime.now();
 
         final int magicNumber = findMagicNumber(numberOfZeros, id + timestamp + previousHash + createdBy);
 
-        final long end = System.currentTimeMillis();
-        final long generationTime = (end - start) / 1000L;
+        final LocalDateTime end = LocalDateTime.now();
+        final long generationTime = ChronoUnit.SECONDS.between(start, end);
 
         final String hash = applySha256(id + timestamp + previousHash + createdBy + magicNumber);
 
