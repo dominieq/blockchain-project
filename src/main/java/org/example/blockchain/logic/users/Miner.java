@@ -45,12 +45,13 @@ public class Miner extends AbstractUser {
      * @param blockChain An instance of the {@link BlockChain}.
      * @param simulation An instance of the {@link Simulation}.
      */
-    public Miner(final String name,
+    public Miner(final Long id,
+                 final String name,
                  final KeyPair keyPair,
                  final BlockChain blockChain,
                  final Simulation simulation) {
 
-        super(name, keyPair, blockChain, simulation);
+        super(id, name, keyPair, blockChain, simulation);
     }
 
     @Override
@@ -119,8 +120,7 @@ public class Miner extends AbstractUser {
             final List<Message> messages = blockChain.getCurrentMessages();
             final long timestamp = new Date().getTime();
 
-            block = Blocks.mineBlock(last._1, messages, last._2, timestamp, Thread.currentThread().getId());
-            // FIXME Thread.currentThread() doesn't even return miner's identifier anymore.
+            block = Blocks.mineBlock(last._1, messages, last._2, timestamp, id);
 
             isIn = blockChain.putLastAndDisplay(block, block.getGenerationTime());
         }
@@ -143,6 +143,11 @@ public class Miner extends AbstractUser {
             LOGGER.trace("Mining has already finished or is in progress. Interrupting process...");
             mining.obtrudeException(new InterruptedException());
         }
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     @Override

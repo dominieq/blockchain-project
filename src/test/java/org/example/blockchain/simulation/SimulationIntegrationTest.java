@@ -42,9 +42,10 @@ public class SimulationIntegrationTest {
         final ExecutorService userSupplier = Executors.newSingleThreadExecutor();
 
         minerSupplier.submit(() -> {
-            for (int i = 0; i < 2; i++) {
+            for (long i = 0; i < 2; i++) {
                 simulation.submitUser(MinerBuilder.builder()
-                        .withName("Miner-" + i)
+                        .withId(i)
+                        .withName("Miner")
                         .withKeyPair(keyGen.generateKeyPair())
                         .withBlockChain(blockChain)
                         .withSimulation(simulation)
@@ -53,9 +54,10 @@ public class SimulationIntegrationTest {
         });
 
         userSupplier.submit(() -> {
-            for (int i = 0; i < 2; i++) {
+            for (long i = 0; i < 2; i++) {
                 simulation.submitUser(SimpleUserBuilder.builder()
-                        .withName("Client-" + i)
+                        .withId(i)
+                        .withName("Client")
                         .withKeyPair(keyGen.generateKeyPair())
                         .withBlockChain(blockChain)
                         .withSimulation(simulation)

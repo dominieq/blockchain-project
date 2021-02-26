@@ -15,6 +15,7 @@ import java.security.KeyPair;
  */
 public final class MinerBuilder {
 
+    private Long id;
     private String name;
     private KeyPair keyPair;
     private BlockChain blockChain;
@@ -24,6 +25,11 @@ public final class MinerBuilder {
 
     public static MinerBuilder builder() {
         return new MinerBuilder();
+    }
+
+    public MinerBuilder withId(final Long id) {
+        this.id = id;
+        return this;
     }
 
     public MinerBuilder withName(final String name) {
@@ -47,6 +53,6 @@ public final class MinerBuilder {
     }
 
     public Miner build() {
-        return new Miner(name, keyPair, blockChain, simulation);
+        return new Miner(id, name, keyPair, blockChain, simulation);
     }
 }

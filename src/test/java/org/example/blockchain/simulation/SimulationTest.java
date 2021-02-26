@@ -63,6 +63,7 @@ public class SimulationTest {
         final AbstractUser chosenUser = mock(AbstractUser.class);
 
         final AbstractUser user = spy(SimpleUserBuilder.builder()
+                .withId(1L)
                 .withName("dominieq")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(mock(BlockChain.class))
@@ -92,6 +93,7 @@ public class SimulationTest {
         doReturn(true).when(blockChain).addMessage(any(Message.class));
 
         final AbstractUser chosenUser = spy(SimpleUserBuilder.builder()
+                .withId(1L)
                 .withName("vulwsztyn")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockChain)
@@ -99,6 +101,7 @@ public class SimulationTest {
                 .build());
 
         final AbstractUser user = spy(SimpleUserBuilder.builder()
+                .withId(2L)
                 .withName("dominieq")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockChain)

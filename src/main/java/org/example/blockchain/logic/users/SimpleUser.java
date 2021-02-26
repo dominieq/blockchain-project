@@ -27,12 +27,13 @@ public class SimpleUser extends AbstractUser {
      * @param blockChain An instance of the {@link BlockChain}.
      * @param simulation An instance of the {@link Simulation}.
      */
-    public SimpleUser(final String name,
+    public SimpleUser(final Long id,
+                      final String name,
                       final KeyPair keyPair,
                       final BlockChain blockChain,
                       final Simulation simulation) {
 
-        super(name, keyPair, blockChain, simulation);
+        super(id, name, keyPair, blockChain, simulation);
     }
 
     @Override
@@ -55,6 +56,11 @@ public class SimpleUser extends AbstractUser {
     public void terminate() {
         active.set(false);
         super.terminate();
+    }
+
+    @Override
+    public Long getId() {
+        return id;
     }
 
     @Override

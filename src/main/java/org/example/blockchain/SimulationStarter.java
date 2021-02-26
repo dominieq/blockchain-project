@@ -28,8 +28,8 @@ public class SimulationStarter {
 
     private static final Logger LOGGER = LogManager.getLogger(SimulationStarter.class);
     private static final int POOL_SIZE = 100;
-    private static final int INITIAL_MINERS_COUNT = 15;
-    private static final int INITIAL_USERS_COUNT = 30;
+    private static final long INITIAL_MINERS_COUNT = 15;
+    private static final long INITIAL_USERS_COUNT = 30;
 
     public static void main(String[] args) throws NoSuchAlgorithmException {
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA");
@@ -51,9 +51,10 @@ public class SimulationStarter {
         final ExecutorService userSupplier = Executors.newSingleThreadExecutor();
 
         minerSupplier.submit(() -> {
-            for (int i = 0; i < INITIAL_MINERS_COUNT; i++) {
+            for (long i = 0; i < INITIAL_MINERS_COUNT; i++) {
                 simulation.submitUser(MinerBuilder.builder()
-                        .withName("Miner-" + i)
+                        .withId(i)
+                        .withName("Miner")
                         .withKeyPair(keyGen.generateKeyPair())
                         .withBlockChain(blockChain)
                         .withSimulation(simulation)
@@ -62,9 +63,10 @@ public class SimulationStarter {
         });
 
         userSupplier.submit(() -> {
-            for (int i = 0; i < INITIAL_USERS_COUNT * 2; i++) {
+            for (long i = 0; i < INITIAL_USERS_COUNT * 2; i++) {
                 simulation.submitUser(SimpleUserBuilder.builder()
-                        .withName("Client-" + i)
+                        .withId(i)
+                        .withName("Client")
                         .withKeyPair(keyGen.generateKeyPair())
                         .withBlockChain(blockChain)
                         .withSimulation(simulation)

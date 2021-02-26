@@ -25,6 +25,7 @@ import static java.util.Objects.nonNull;
 public abstract class AbstractUser implements Runnable {
 
     private static final Logger LOGGER = LogManager.getLogger(AbstractUser.class);
+    protected final Long id;
     protected final String name;
     protected volatile int coins;
     protected final KeyPair keyPair;
@@ -40,11 +41,13 @@ public abstract class AbstractUser implements Runnable {
      * @param blockChain1 An instance of the {@link BlockChain}.
      * @param simulation1 An instance of the {@link Simulation}.
      */
-    public AbstractUser(final String name1,
+    public AbstractUser(final Long id1,
+                        final String name1,
                         final KeyPair keyPair1,
                         final BlockChain blockChain1,
                         final Simulation simulation1) {
 
+        id = id1;
         name = name1;
         coins = 100;
         keyPair = keyPair1;
@@ -175,18 +178,22 @@ public abstract class AbstractUser implements Runnable {
         if (this == o) return true;
         if (!(o instanceof AbstractUser)) return false;
         AbstractUser user = (AbstractUser) o;
-        return Objects.equal(name, user.name) && Objects.equal(keyPair, user.keyPair);
+        return Objects.equal(id, user.id)
+                && Objects.equal(name, user.name)
+                && Objects.equal(keyPair, user.keyPair);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name, keyPair);
+        return Objects.hashCode(id, name, keyPair);
     }
 
     @Override
     public String toString() {
-        return name;
+        return name + " (" + id + ")";
     }
+
+    abstract public Long getId();
 
     abstract public String getName();
 

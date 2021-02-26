@@ -23,7 +23,8 @@ public class MinerIntegrationTest {
     @BeforeEach
     public void setUp() throws Exception {
         subject = MinerBuilder.builder()
-                .withName("TestMiner-1")
+                .withId(1L)
+                .withName("TestMiner")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(mock(BlockChain.class))
                 .withSimulation(mock(Simulation.class))

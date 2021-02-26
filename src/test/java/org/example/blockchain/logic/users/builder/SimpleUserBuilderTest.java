@@ -31,6 +31,7 @@ public class SimpleUserBuilderTest {
 
         // when
         final SimpleUser actual = subject
+                .withId(1L)
                 .withName(name)
                 .withKeyPair(keyPair)
                 .withBlockChain(blockChain)
@@ -39,6 +40,7 @@ public class SimpleUserBuilderTest {
 
         // then
         assertThat(actual).isNotNull();
+        assertThat(actual.getId()).isOne();
         assertThat(actual.getName()).isEqualTo(name);
         assertThat(actual.getCoins()).isEqualTo(100);
         assertThat(actual)

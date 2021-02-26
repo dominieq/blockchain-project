@@ -44,7 +44,7 @@ public class BlocksTest {
 
         // given
         final long timestamp = new Date().getTime();
-        final long createdBy = Thread.currentThread().getId();
+        final long createdBy = 1L;
 
         // when
         Block actual;
@@ -96,7 +96,7 @@ public class BlocksTest {
 
         // given
         final long prevTimestamp = new Date().getTime();
-        final long createdBy = Thread.currentThread().getId();
+        final long createdBy = 1L;
         final Block prevBlock = Blocks.mineBlock(null, new ArrayList<>(),0, prevTimestamp, createdBy);
 
         final long timestamp = new Date().getTime();

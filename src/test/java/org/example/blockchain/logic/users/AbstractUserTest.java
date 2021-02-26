@@ -35,6 +35,7 @@ public class AbstractUserTest {
     @BeforeEach
     public void setUp() {
         subject = SimpleUserBuilder.builder()
+                .withId(1L)
                 .withName("dominieq")
                 .withKeyPair(generator.generateKeyPair())
                 .withBlockChain(blockChain)

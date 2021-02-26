@@ -30,7 +30,8 @@ public class AbstractUserIntegrationTest {
         blockchain = spy(BlockChain.getInstance());
 
         subject = SimpleUserBuilder.builder()
-                .withName("TestUser-1")
+                .withId(1L)
+                .withName("TestUser")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockchain)
                 .withSimulation(mock(Simulation.class))

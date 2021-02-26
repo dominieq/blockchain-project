@@ -26,7 +26,8 @@ public class MinerTest {
         blockchain = mock(BlockChain.class);
 
         subject = MinerBuilder.builder()
-                .withName("TestMiner-1")
+                .withId(1L)
+                .withName("TestMiner")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockchain)
                 .withSimulation(mock(Simulation.class))
@@ -47,6 +48,7 @@ public class MinerTest {
         // then
         assertThat(actual.getId()).isOne();
         assertThat(actual.getPreviousHash()).isEqualTo("0");
+        assertThat(actual.getCreatedBy()).isEqualTo(subject.getId());
         assertThat(actual.getMessages()).isEmpty();
         assertThat(actual.getNProgress()).isZero(); // Blockchain is mocked so n progress wasn't changed.
         verify(blockchain, times(1)).getLastWithNumberOfZeros();
