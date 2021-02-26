@@ -467,7 +467,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).isEmpty();
+        assertThat(subject.blocks).isEmpty();
     }
 
     @Test
@@ -481,7 +481,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).isEmpty();
+        assertThat(subject.blocks).isEmpty();
         verifyBlockWasValidated(block, 1);
     }
 
@@ -501,7 +501,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).isEmpty();
+        assertThat(subject.blocks).isEmpty();
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, never()).getMessages();
     }
@@ -519,14 +519,14 @@ public class BlockChainTest {
                 .withHash(Blocks.applySha256(1L + 1L + "666" + 1L + -1))
                 .build());
 
-        subject.getBlocks().add(prevBlock);
+        subject.blocks.add(prevBlock);
 
         // when
         final boolean actual = subject.putLast(block);
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getBlocks()).containsOnly(prevBlock);
+        assertThat(subject.blocks).containsOnly(prevBlock);
         verifyBlockPairWasValidated(prevBlock, block, 1);
         verify(block, never()).getMessages();
 
@@ -543,7 +543,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
+        assertThat(subject.blocks).contains(block);
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, times(1)).getMessages();
     }
@@ -559,14 +559,14 @@ public class BlockChainTest {
                 .withHash(Blocks.applySha256(1L + 1L + prevHash + 1L + -1))
                 .build());
 
-        subject.getBlocks().add(prevBlock);
+        subject.blocks.add(prevBlock);
 
         // when
         final boolean actual = subject.putLast(block);
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).containsExactly(prevBlock, block);
+        assertThat(subject.blocks).containsExactly(prevBlock, block);
         verifyAttemptToAddBlockToList(prevBlock, block, 1);
         verify(block, times(1)).getMessages();
     }
@@ -588,39 +588,12 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
+        assertThat(subject.blocks).contains(block);
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(1);
         assertThat(subject.getNumberOfZeros()).isOne();
         assertThat(block.getNProgress()).isOne();
-    }
-
-    @Test
-    public void should_not_increase_nor_decrease_number_of_zeros()
-            throws NoSuchFieldException, IllegalAccessException {
-
-        // given
-        final Block block = spy(getBlock()
-                .withHash(Blocks.applySha256(1L + 1L + "0" + 1L + 876285186))
-                .withMagicNumber(876285186)
-                .build());
-
-        final Field field = BlockChain.class.getDeclaredField("numberOfZeros");
-        field.setAccessible(true);
-        field.set(subject, 6);
-
-        // when
-        final boolean actual = subject.putLast(block, 29);
-
-        // then
-        assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
-        verifyAttemptToAddBlockToEmptyList(block, 1);
-        verify(block, times(1)).getMessages();
-        verify(block, times(1)).setNProgress(6);
-        assertThat(subject.getNumberOfZeros()).isEqualTo(6);
-        assertThat(block.getNProgress()).isEqualTo(6);
     }
 
     @Test
@@ -642,7 +615,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getBlocks()).contains(block);
+        assertThat(subject.blocks).contains(block);
         verifyAttemptToAddBlockToEmptyList(block, 1);
         verify(block, times(1)).getMessages();
         verify(block, times(1)).setNProgress(0);
@@ -664,7 +637,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getMessages()).isEmpty();
+        assertThat(subject.messages).isEmpty();
     }
 
     @Test
@@ -678,7 +651,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getMessages()).containsOnly(message);
+        assertThat(subject.messages).containsOnly(message);
         verifyNoInteractions(message);
     }
 
@@ -703,7 +676,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isFalse();
-        assertThat(subject.getMessages()).containsOnly(prevMessage);
+        assertThat(subject.messages).containsOnly(prevMessage);
         verify(prevMessage, times(1)).getId();
         verify(message, times(1)).getId();
     }
@@ -728,7 +701,7 @@ public class BlockChainTest {
 
         // then
         assertThat(actual).isTrue();
-        assertThat(subject.getMessages()).containsExactly(prevMessage, message);
+        assertThat(subject.messages).containsExactly(prevMessage, message);
         verify(prevMessage, times(1)).getId();
         verify(message, times(1)).getId();
     }

@@ -37,7 +37,7 @@ public class SimulationTest {
         subject.createAndPerformTransaction(null);
 
         // then
-        verifyNoInteractions(subject.getUsers());
+        verifyNoInteractions(subject.users);
     }
 
     @Test
@@ -45,14 +45,14 @@ public class SimulationTest {
 
         // given
         final AbstractUser user = mock(AbstractUser.class);
-        subject.getUsers().add(user);
+        subject.users.add(user);
 
         // then
         subject.createAndPerformTransaction(user);
 
         // then
-        assertThat(subject.getUsers()).containsOnly(user);
-        verify(subject.getUsers(), times(1)).toArray();
+        assertThat(subject.users).containsOnly(user);
+        verify(subject.users, times(1)).toArray();
         verifyNoInteractions(user);
     }
 
@@ -63,6 +63,7 @@ public class SimulationTest {
         final AbstractUser chosenUser = mock(AbstractUser.class);
 
         final AbstractUser user = spy(SimpleUserBuilder.builder()
+                .withId(1L)
                 .withName("dominieq")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(mock(BlockChain.class))
@@ -72,14 +73,14 @@ public class SimulationTest {
         user.takeCoins(100);
         assertThat(user.getCoins()).isZero();
 
-        subject.getUsers().addAll(Arrays.asList(chosenUser, user));
+        subject.users.addAll(Arrays.asList(chosenUser, user));
 
         // when
         subject.createAndPerformTransaction(user);
 
         // then
-        assertThat(subject.getUsers()).containsExactly(chosenUser, user);
-        verify(subject.getUsers(), times(1)).toArray();
+        assertThat(subject.users).containsExactly(chosenUser, user);
+        verify(subject.users, times(1)).toArray();
         verifyNoInteractions(chosenUser);
         verify(user, times(2)).getCoins();
     }
@@ -92,6 +93,7 @@ public class SimulationTest {
         doReturn(true).when(blockChain).addMessage(any(Message.class));
 
         final AbstractUser chosenUser = spy(SimpleUserBuilder.builder()
+                .withId(1L)
                 .withName("vulwsztyn")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockChain)
@@ -99,6 +101,7 @@ public class SimulationTest {
                 .build());
 
         final AbstractUser user = spy(SimpleUserBuilder.builder()
+                .withId(2L)
                 .withName("dominieq")
                 .withKeyPair(mock(KeyPair.class))
                 .withBlockChain(blockChain)
@@ -106,14 +109,14 @@ public class SimulationTest {
                 .build());
         doReturn(mock(SecureMessage.class)).when(user).prepareMessage();
 
-        subject.getUsers().addAll(Arrays.asList(chosenUser, user));
+        subject.users.addAll(Arrays.asList(chosenUser, user));
 
         // when
         subject.createAndPerformTransaction(user);
 
         // then
-        assertThat(subject.getUsers()).containsExactly(chosenUser, user);
-        verify(subject.getUsers(), times(1)).toArray();
+        assertThat(subject.users).containsExactly(chosenUser, user);
+        verify(subject.users, times(1)).toArray();
         verify(chosenUser, times(1)).addCoins(anyInt());
         verify(user, times(2)).getCoins();
         verify(user, times(1)).prepareMessage();

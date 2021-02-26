@@ -5,6 +5,8 @@ import org.example.blockchain.logic.message.Message;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -72,31 +74,31 @@ public final class Blocks {
      *
      * @param prevBlock A previous block that will be used as a reference point when mining a new block.
      * @param messages The list of messages that will be included in a new block.
+     * @param numberOfZeros The number of zeros required at the beginning of a new block's hash.
      * @param timestamp The timestamp at which a creator started mining the block.
      * @param createdBy The unique identifier of a creator.
      * @return A valid block that can be added to a blockchain.
      */
     public static Block mineBlock(final Block prevBlock,
                                   final List<Message> messages,
+                                  final int numberOfZeros,
                                   final long timestamp,
                                   final long createdBy) {
 
         long id = 1L;
         String previousHash = "0";
-        int nProgress = 0;
 
         if (nonNull(prevBlock)) {
             id = prevBlock.getId() + 1L;
             previousHash = prevBlock.getHash();
-            nProgress = prevBlock.getNProgress();
         }
 
-        final long start = System.currentTimeMillis();
+        final LocalDateTime start = LocalDateTime.now();
 
-        final int magicNumber = findMagicNumber(nProgress, id + timestamp + previousHash + createdBy);
+        final int magicNumber = findMagicNumber(numberOfZeros, id + timestamp + previousHash + createdBy);
 
-        final long end = System.currentTimeMillis();
-        final long generationTime = (end - start) / 1000L;
+        final LocalDateTime end = LocalDateTime.now();
+        final long generationTime = ChronoUnit.SECONDS.between(start, end);
 
         final String hash = applySha256(id + timestamp + previousHash + createdBy + magicNumber);
 
@@ -108,8 +110,8 @@ public final class Blocks {
                 .withHash(hash)
                 .withPreviousHash(previousHash)
                 .withCreatedBy(createdBy)
-                .withNProgress(nProgress)
-                .withMessages(prevBlock != null ? messages : new ArrayList<>())
+                .withNProgress(numberOfZeros)
+                .withMessages(nonNull(prevBlock) ? messages : new ArrayList<>())
                 .build();
     }
 }

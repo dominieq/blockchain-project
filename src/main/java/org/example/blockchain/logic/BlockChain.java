@@ -1,5 +1,7 @@
 package org.example.blockchain.logic;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import org.example.blockchain.logic.block.Block;
 import org.example.blockchain.logic.block.Blocks;
 import org.example.blockchain.logic.message.Message;
@@ -23,8 +25,8 @@ public class BlockChain implements Serializable {
 
     private static BlockChain instance;
     private int numberOfZeros;
-    private final List<Message> messages;
-    private final List<Block> blocks;
+    protected final List<Message> messages;
+    protected final List<Block> blocks;
     private final IdentifierStream identifierStream;
     private static final Object IDENTIFIER_LOCK = new Object();
     private static final Object MESSAGES_LOCK = new Object();
@@ -53,17 +55,17 @@ public class BlockChain implements Serializable {
     }
 
     /**
-     * If the {@link BlockChain} is empty, puts a block after successful validation. Otherwise, puts a block
-     * after validating the last pair in the {@link BlockChain}.
+     * If the {@code BlockChain} is empty, puts a block after successful validation. Otherwise, puts a block
+     * after validating the last pair in the {@code BlockChain}.
      * Checks whether a block's hash starts with the required number of zeros.
      * Block is rejected if it doesn't have the required number of zeros at the beginning of it's hash.
      * If a block contains any messages, they are removed from the queue.
      *
-     * @param block A block that is to be added to the {@link BlockChain}.
-     * @return {@code true} if a block was successfully added to the {@link BlockChain}, otherwise {@code false}.
+     * @param block A block that is to be added to the {@code BlockChain}.
+     * @return {@code true} if a block was successfully added to the {@code BlockChain}, otherwise {@code false}.
      */
     public synchronized boolean putLast(final Block block) {
-        if (((blocks.isEmpty() && validateBlock(block)) || validateBlockPair(getLast(), block)) &&
+        if (((blocks.isEmpty() && validateBlock(block)) || validateBlockPair(getLastWithNumberOfZeros()._1, block)) &&
                 block.getHash().startsWith("0".repeat(Math.max(0, numberOfZeros)))) {
 
             synchronized (MESSAGES_LOCK) {
@@ -80,9 +82,9 @@ public class BlockChain implements Serializable {
      * At first, tries to put a block using {@link #putLast(Block)}.
      * If it succeeds, evaluates the next number of zeros at the beginning of a block's hash.
      *
-     * @param block An block that is to be added to the {@link BlockChain}.
-     * @param generationTime - The amount of time it took to generate a block.
-     * @return {@code true} if a block was successfully added to the {@link BlockChain}, otherwise {@code false}.
+     * @param block A block that is to be added to the {@code BlockChain}.
+     * @param generationTime The amount of time it took to generate a block.
+     * @return {@code true} if a block was successfully added to the {@code BlockChain}, otherwise {@code false}.
      * @see #putLast(Block)
      */
     public synchronized boolean putLast(final Block block, final long generationTime) {
@@ -90,11 +92,7 @@ public class BlockChain implements Serializable {
 
         if (isIn) {
             if (generationTime < 30L) {
-                if (numberOfZeros < 6) {
-                    block.setNProgress(++numberOfZeros);
-                } else {
-                    block.setNProgress(numberOfZeros);
-                }
+                block.setNProgress(++numberOfZeros);
             } else if (numberOfZeros > 0) {
                 block.setNProgress(--numberOfZeros);
             }
@@ -104,11 +102,30 @@ public class BlockChain implements Serializable {
     }
 
     /**
-     * Returns the last block in the {@link BlockChain} or {@code null} if it is empty.
-     * @return The last block in the {@link BlockChain} or {@code null} if it is empty.
+     * At first, tries to put a block using {@link #putLast(Block, long)}.
+     * If it succeeds, displays the block and returns {@code true}.
+     * <br>
+     * This method was added to display new blocks in ordered fashion.
+     *
+     * @param block A block that is to be added to the {@code BlockChain}.
+     * @param generationTime The amount of time it took to generate a block
+     * @return {@code true} if a block was successfully added to the {@code BlockChain}, otherwise returns {@code false}.
+     * @see #putLast(Block, long)
      */
-    public synchronized Block getLast() {
-        return !blocks.isEmpty() ? blocks.get(blocks.size() - 1) : null;
+    public synchronized boolean putLastAndDisplay(final Block block, final long generationTime) {
+        final boolean isIn = putLast(block, generationTime);
+        if (isIn) System.out.println(block);
+        return isIn;
+    }
+
+    /**
+     * Returns the last block in the {@code BlockChain} or {@code null} if it is empty
+     * as well as the current number of zeros.
+     * @return The last block in the {@code BlockChain} and the current number of zeros.
+     */
+    public synchronized Tuple2<Block, Integer> getLastWithNumberOfZeros() {
+        final Block block = !blocks.isEmpty() ? blocks.get(blocks.size() - 1) : null;
+        return Tuple.of(block,numberOfZeros);
     }
 
     /**
@@ -261,17 +278,29 @@ public class BlockChain implements Serializable {
         return true;
     }
 
-    public int getNumberOfZeros() {
-        return numberOfZeros;
+    /**
+     * Thread safe method to get the size of a {@code BlockChain}.
+     * @return The current size of a {@code BlockChain}.
+     */
+    public synchronized int size() {
+        return blocks.size();
     }
 
-    public List<Message> getMessages() {
+    /**
+     * Thread safe method to retrieve the content of messages list.
+     * @return The current content of messages list.
+     */
+    public List<Message> getCurrentMessages() {
         synchronized (MESSAGES_LOCK) {
-            return messages;
+            return new ArrayList<>(messages);
         }
     }
 
-    public List<Block> getBlocks() {
-        return blocks;
+    public synchronized int getNumberOfZeros() {
+        return numberOfZeros;
+    }
+
+    public synchronized void setNumberOfZeros(final int numberOfZeros) {
+        this.numberOfZeros = numberOfZeros;
     }
 }

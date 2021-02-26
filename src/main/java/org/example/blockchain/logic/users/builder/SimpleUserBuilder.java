@@ -15,6 +15,7 @@ import java.security.KeyPair;
  */
 public final class SimpleUserBuilder {
 
+    private Long id;
     private String name;
     private KeyPair keyPair;
     private BlockChain blockChain;
@@ -24,6 +25,11 @@ public final class SimpleUserBuilder {
 
     public static SimpleUserBuilder builder() {
         return new SimpleUserBuilder();
+    }
+
+    public SimpleUserBuilder withId(final Long id) {
+        this.id = id;
+        return this;
     }
 
     public SimpleUserBuilder withName(final String name) {
@@ -47,6 +53,6 @@ public final class SimpleUserBuilder {
     }
 
     public SimpleUser build() {
-        return new SimpleUser(name, keyPair, blockChain, simulation);
+        return new SimpleUser(id, name, keyPair, blockChain, simulation);
     }
 }

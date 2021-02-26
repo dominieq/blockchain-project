@@ -1,5 +1,6 @@
 package org.example.blockchain.logic.message;
 
+import com.google.common.base.Objects;
 import org.example.blockchain.logic.users.AbstractUser;
 
 import static java.util.Objects.isNull;
@@ -16,6 +17,7 @@ public class Transaction extends MessageDecorator {
     private final AbstractUser from;
     private final AbstractUser to;
     private final long amount;
+    private final String text;
 
     /**
      * Create a {@code Transaction} with all necessary fields.
@@ -39,40 +41,29 @@ public class Transaction extends MessageDecorator {
         this.from = from;
         this.to = to;
         this.amount = amount;
+        this.text = from + " says \"" + message.getText() + "\" to " + to + " and sends " + amount + " coins";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Transaction)) return false;
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return message.getId();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Transaction)) {
-            return false;
-        }
-
-        return message.getId() == ((Transaction) obj).getMessage().getId();
+        return Objects.hashCode(super.hashCode());
     }
 
     @Override
     public String toString() {
-        return from + " says \"" + message.getText() + "\" to " + to + " and sends " + amount + " coins";
+        return text;
     }
 
     @Override
     public String getText() {
-        return message.getText();
-    }
-
-    @Override
-    public int getId() {
-        return message.getId();
-    }
-
-    @Override
-    public Message getMessage() {
-        return message;
+        return text;
     }
 
     public AbstractUser getFrom() {

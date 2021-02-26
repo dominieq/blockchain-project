@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 public class AbstractUserTest {
 
@@ -35,6 +35,7 @@ public class AbstractUserTest {
     @BeforeEach
     public void setUp() {
         subject = SimpleUserBuilder.builder()
+                .withId(1L)
                 .withName("dominieq")
                 .withKeyPair(generator.generateKeyPair())
                 .withBlockChain(blockChain)
@@ -107,10 +108,51 @@ public class AbstractUserTest {
         assertThat(actual).isInstanceOf(SecureMessage.class);
         assertThat(actual.getId()).isEqualTo(1);
         assertThat(actual.getText()).isEqualTo("Hello there!");
-        assertThat(((SecureMessage) actual).getPublicKey()).isEqualTo(subject.getKeyPair().getPublic());
+        assertThat(((SecureMessage) actual).getPublicKey()).isEqualTo(subject.getPublicKey());
 
         final boolean actualVerify = Messages.verify(
-                actual.getText() + 1, ((SecureMessage) actual).getSignature(), subject.getKeyPair().getPublic());
+                actual.getText() + 1, ((SecureMessage) actual).getSignature(), subject.getPublicKey());
         assertThat(actualVerify).isTrue();
+    }
+
+    @Test
+    public void should_not_execute_sleep_when_timeout_is_zero() {
+
+        // given
+        final long timeout = 0L;
+        final TimeUnit timeUnit = TimeUnit.SECONDS;
+
+        // when
+        final boolean actual = subject.executeSleep(timeout, timeUnit);
+
+        // then
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void should_not_execute_sleep_when_sleep_service_is_null() {
+
+        // given
+        final long timeout = 1L;
+
+        // when
+        final boolean actual = subject.executeSleep(timeout, null);
+
+        // then
+        assertThat(actual).isFalse();
+    }
+
+    @Test
+    public void should_execute_sleep() {
+
+        // given
+        final long timeout = 1L;
+        final TimeUnit timeUnit = TimeUnit.SECONDS;
+
+        // when
+        final boolean actual = subject.executeSleep(timeout, timeUnit);
+
+        // then
+        assertThat(actual).isTrue();
     }
 }

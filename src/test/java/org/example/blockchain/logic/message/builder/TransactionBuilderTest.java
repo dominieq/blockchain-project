@@ -1,31 +1,18 @@
 package org.example.blockchain.logic.message.builder;
 
 import org.example.blockchain.logic.message.Message;
-import org.example.blockchain.logic.message.Messages;
 import org.example.blockchain.logic.message.Transaction;
 import org.example.blockchain.logic.users.AbstractUser;
-import org.example.blockchain.logic.users.builder.MinerBuilder;
-import org.example.blockchain.logic.users.builder.SimpleUserBuilder;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.mockito.Mockito.mock;
 
 public class TransactionBuilderTest {
 
-    private static KeyPairGenerator generator;
     private TransactionBuilder subject;
-
-    @BeforeAll
-    public static void initialize() throws NoSuchAlgorithmException {
-        generator = KeyPairGenerator.getInstance("DSA");
-        generator.initialize(2048);
-    }
 
     @BeforeEach
     public void setUp() {
@@ -36,30 +23,12 @@ public class TransactionBuilderTest {
     public void should_build_valid_transaction() {
 
         // given
-        final KeyPair keyPair = generator.generateKeyPair();
-        final String text = "Fancy text message";
-        final int id = 1;
-        final byte[] signature = Messages.sign(text + id, keyPair.getPrivate());
-
-        final Message message = SecureMessageBuilder.builder()
-                .withId(id)
-                .withText(text)
-                .withSignature(signature)
-                .withPublicKey(keyPair.getPublic())
-                .build();
-
-        final AbstractUser sender = SimpleUserBuilder.builder()
-                .withName("TestSender")
-                .withKeyPair(keyPair)
-                .build();
-
-        final AbstractUser receiver = MinerBuilder.builder()
-                .withName("TestReceiver")
-                .withKeyPair(keyPair)
-                .build();
+        final Message message = mock(Message.class);
+        final AbstractUser sender = mock(AbstractUser.class);
+        final AbstractUser receiver = mock(AbstractUser.class);
 
         // when
-        final Transaction transaction = subject
+        final Transaction actual = subject
                 .withMessage(message)
                 .withFrom(sender)
                 .withTo(receiver)
@@ -67,9 +36,29 @@ public class TransactionBuilderTest {
                 .build();
 
         // then
-        assertThat(transaction)
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("message", message)
-                .hasFieldOrPropertyWithValue("amount", 100L);
+        assertThat(actual).isNotNull();
+        assertThat(actual.getFrom()).isEqualTo(sender);
+        assertThat(actual.getTo()).isEqualTo(receiver);
+        assertThat(actual.getAmount()).isEqualTo(100L);
+        assertThat(actual).hasFieldOrPropertyWithValue("message", message);
+    }
+
+    @Test
+    public void should_not_build_transaction_when_from_or_to_are_null() {
+
+        // given
+        final Message message = mock(Message.class);
+
+        // when
+        final Throwable actual = catchThrowable(() -> subject
+                .withMessage(message)
+                .withAmount(100L)
+                .build());
+
+        // then
+        assertThat(actual)
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Transaction should have a sender and receiver")
+                .hasNoCause();
     }
 }
