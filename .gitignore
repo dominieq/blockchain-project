@@ -33,6 +33,9 @@
 *.iml
 *.ipr
 
+# Sonarlint
+.idea/**/sonarlint
+
 ## Java
 
 # Compiled class file
